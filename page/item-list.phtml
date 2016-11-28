@@ -1,0 +1,41 @@
+<?php
+
+
+//~ Template for item-list.php
+// variables:
+//  $title - page title
+//  $items - Items to be displayed
+
+?>
+
+<?php if (empty($items)): ?>
+    <p>No items found.</p>
+<?php else: ?>
+    <table class="detail">
+        <tr>
+            <th>ID</th> 
+            <th>Type</th>
+            <th>Subtype</th>
+            <th>Size</th>
+            <th>Unit</th>
+        </tr>
+        </th>
+        <?php foreach ($items as $item): ?>
+            <?php /* @var $item Item */ ?>
+            <tr>
+                <td>
+                    <a href="<?php echo Utils::createLink('item-detail', array('id' => $item->getId())) ?>">
+                    <?php echo Utils::escape($item->getType()); ?> -- <?php echo Utils::escape($item->getSubType()); ?>
+                    </a>
+                </td>
+                <td>
+                    <?php echo Utils::escape($item->getSize()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($item->getUnit()) ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>
+

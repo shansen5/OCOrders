@@ -1,0 +1,99 @@
+<?php
+
+
+//~ Template for add-customer.php
+// variables:
+//  $errors - validation errors
+//  $customer - submitted Customer
+//  $edit - true for EDIT, false for ADD
+
+function error_field($title, array $errors) {
+    foreach ($errors as $error) {
+        /* @var $error Error */
+        if ($error->getSource() == $title) {
+            return ' error-field';
+        }
+    }
+    return '';
+}
+
+/* @var $customer Customer */
+?>
+
+<h1>
+    <?php if ($edit): ?>
+        <?php 
+        echo Utils::escape($customer->getFirstName()) . ' ' . Utils::escape($customer->getLastName()); 
+        ?>
+    <?php else: ?>
+        Add new Customer
+    <?php endif; ?>
+</h1>
+
+<?php if (!empty($errors)): ?>
+<ul class="errors">
+    <?php foreach ($errors as $error): ?>
+        <?php /* @var $error Error */ ?>
+        <li><?php echo $error->getMessage(); ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<form action="#" method="post">
+    <fieldset>
+        <div class="field">
+            <label>First Name:</label>
+            <input type="text" name="customer[first_name]" value="<?php echo Utils::escape($customer->getFirstName()); ?>"
+                   class="text<?php echo error_field('first_name', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Last Name:</label>
+            <input type="text" name="customer[last_name]" value="<?php echo Utils::escape($customer->getLastName()); ?>"
+                   class="text<?php echo error_field('last_name', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Phone:</label>
+            <input type="text" name="customer[phone]" value="<?php echo Utils::escape($customer->getPhone()); ?>"
+                   class="text<?php echo error_field('phone', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Email:</label>
+            <input type="text" name="customer[email]" value="<?php echo Utils::escape($customer->getEmail()); ?>"
+                   class="text<?php echo error_field('email', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Street1:</label>
+            <input type="text" name="customer[street1]" value="<?php echo Utils::escape($customer->getStreet1()); ?>"
+                   class="text<?php echo error_field('street1', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Street2:</label>
+            <input type="text" name="customer[street2]" value="<?php echo Utils::escape($customer->getStreet2()); ?>"
+                   class="text<?php echo error_field('street2', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>City:</label>
+            <input type="text" name="customer[city]" value="<?php echo Utils::escape($customer->getCity()); ?>"
+                   class="text<?php echo error_field('city', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>State:</label>
+            <input type="text" name="customer[state]" value="<?php echo Utils::escape($customer->getState()); ?>"
+                   class="text<?php echo error_field('state', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Country:</label>
+            <input type="text" name="customer[country]" value="<?php echo Utils::escape($customer->getCountry()); ?>"
+                   class="text<?php echo error_field('country', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Postal Code:</label>
+            <input type="text" name="customer[postal_code]" value="<?php echo Utils::escape($customer->getPostalCode()); ?>"
+                   class="text<?php echo error_field('postal_code', $errors); ?>"/>
+        </div>
+        <div class="wrapper">
+            <input type="submit" name="cancel" value="CANCEL" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+        </div>
+    </fieldset>
+</form>

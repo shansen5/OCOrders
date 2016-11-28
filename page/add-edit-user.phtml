@@ -1,0 +1,57 @@
+<?php
+
+
+//~ Template for add-edit-user.php
+// variables:
+//  $errors - validation errors
+//  $user - submitted Item
+//  $edit - true for EDIT, false for ADD
+
+function error_field($title, array $errors) {
+    foreach ($errors as $error) {
+        /* @var $error Error */
+        if ($error->getSource() == $title) {
+            return ' error-field';
+        }
+    }
+    return '';
+}
+
+/* @var $user Item */
+?>
+
+<h1>
+    <?php if ($edit): ?>
+        <?php echo Utils::escape($user->getUsername()); ?>
+    <?php else: ?>
+        Add new Item
+    <?php endif; ?>
+</h1>
+
+<?php if (!empty($errors)): ?>
+<ul class="errors">
+    <?php foreach ($errors as $error): ?>
+        <?php /* @var $error Error */ ?>
+        <li><?php echo $error->getMessage(); ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<form action="#" method="post">
+    <fieldset>
+        <div class="field">
+            <label>User:</label>
+            <input type="text" name="user[username]" value="<?php echo Utils::escape($user->getUsername()); ?>"
+                   class="text<?php echo error_field('username', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Password:</label>
+            <input type="password" name="user[password]" value="<?php echo Utils::escape($user->getPassword()); ?>"
+                   class="text<?php echo error_field('password', $errors); ?>"/>
+        </div>
+        <div class="wrapper">
+            <input type="submit" name="cancel" value="CANCEL" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+        </div>
+    </fieldset>
+</form>

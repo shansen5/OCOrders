@@ -1,0 +1,159 @@
+<?php
+
+
+//~ Template for working-order-list.php
+// variables:
+//  $title - page title
+//  $items - Locations to be displayed
+
+function error_field($title, array $errors) {
+    foreach ($errors as $error) {
+        /* @var $error Error */
+        if ($error->getSource() == $title) {
+            return ' error-field';
+        }
+    }
+    return '';
+}
+
+?>
+
+<div id="twocolwrapper">
+    <div id="column1">
+        <form action="#" method="post">
+            <fieldset>
+                <div  class="field">
+                    <label>Customer:</label>
+                    <select name="customer_id">
+                        <option value="0" >All Customers</option>
+                    <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
+                        <option value="<?php echo $cust[id]; ?>"
+                                <?php if ($cust[id] == $_POST['customer_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+                <div  class="field">
+                    <label>Item:</label>
+                    <select name="item_id">
+                        <option value="0" >All Items</option>
+                    <?php 
+                    $itemlist = Utils::getAllItems();
+                    foreach ($itemlist as $it): 
+                        ?>
+                        <option value="<?php 
+                        echo $it->getId(); 
+                        ?>"
+                                <?php 
+                                if ($it->getId() == $_POST['item_id']): 
+                                    ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php 
+                                echo $it->getType() . ", " . $it->getSubType() . ", " . $it->getSize() . ", " . $it->getUnit(); 
+                                ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+                <div  class="field">
+                    <label>Location:</label>
+                    <select name="pickup_location_id">
+                        <option value="0" >All Locations</option>
+                    <?php foreach (Utils::getAllLocationIdAndName() as $loc): ?>
+                        <option value="<?php echo $loc[id]; ?>"
+                                <?php 
+                                if ($loc[id] == $_POST['pickup_location_id']): 
+                                    ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $loc[name] . ", " . $loc[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Start Date:</label>
+                    <input type="text" name="start_date" 
+                          <?php if ($_POST['start_date']) echo 'value="' . $_POST['start_date'] . '" '; ?>
+                          class="text datepicker<?php // echo error_field('start_date', $errors); ?>" /> 
+                </div>
+                <div class="field">
+                    <label>End Date:</label>
+                    <input type="text" name="end_date" 
+                          <?php if ($_POST['end_date']) echo 'value="' . $_POST['end_date'] . '" '; ?>
+                          class="text datepicker<?php // echo error_field('end_date', $errors); ?>" />  
+                </div>
+                <div class="wrapper">
+                    <input type="submit" name="save" value="FILTER" class="submit" />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="sidebar">
+        <form action="#" method="post">
+            <label>Count:  </label><?php echo sizeof( $working_orders ); ?>
+            <div class="wrapper">
+                <input type="hidden" name="customer_id" value="<?php 
+                echo $_POST['customer_id']; 
+                ?>">
+                <input type="hidden" name="item_id" value="<?php echo $_POST['item_id']; ?>">
+                <input type="hidden" name="pickup_location_id" value="<?php echo $_POST['pickup_location_id']; ?>">
+                <input type="hidden" name="start_date" value="<?php echo $_POST['start_date']; ?>">
+                <input type="hidden" name="end_date" value="<?php echo $_POST['end_date']; ?>">
+                <input type="submit" name="download" value="Download CSV" class="submit" />
+            </div>
+    </div>
+    <div id="cleared"></div>
+</div>
+
+<?php if (empty($working_orders)): ?>
+    <p>No working_orders found.</p>
+<?php else: ?>
+    <table class="detail">
+        <tr>
+            <th>ID</th> 
+            <th>DeliveryDate</th>
+            <th>Customer</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Pickup Location</th>
+            <th>OrderId</th>
+        </tr>
+        <?php foreach ($working_orders as $working_order): ?>
+            <?php /* @var $working_order WorkingOrder */ ?>
+            <tr>
+                <td>
+                    <a href="<?php echo Utils::createLink('working-order-detail', array('id' => $working_order->getId())) ?>">
+                        <?php echo $working_order->getId() ?></a>
+                </td>
+                <td>
+                    <?php echo Utils::escape(Utils::formatDate($working_order->getDeliveryDate())) ?>
+                </td>
+                <td>
+                    <a href="<?php echo Utils::createLink('customer-detail', array('id' => $working_order->getCustomerId())) ?>">
+                    <?php echo Utils::escape($working_order->getCustomerName()) ?></a>
+                </td>
+                <td>
+                    <?php 
+                    $it = $working_order->getItem();
+                    if ( $it ) {
+                        echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                            . ' - ' . $it->getSize() . ' ' . $it->getUnit() );
+                    } ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($working_order->getQuantity()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($working_order->getLocationName()) ?>
+                </td>
+                <td>
+                    <a href="<?php echo Utils::createLink('order-detail', array('id' => $working_order->getOrderId())) ?>">
+                        <?php echo $working_order->getOrderId() ?></a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>

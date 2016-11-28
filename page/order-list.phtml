@@ -1,0 +1,67 @@
+<?php
+
+
+//~ Template for order-list.php
+// variables:
+//  $title - page title
+//  $items - Locations to be displayed
+
+?>
+
+<?php if (empty($orders)): ?>
+    <p>No orders found.</p>
+<?php else: ?>
+    <table class="detail">
+        <tr>
+            <th>ID</th> 
+            <th>Customer</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Frequency</th>
+            <th>Day</th>
+        </tr>
+        </th>
+        <?php foreach ($orders as $order): ?>
+            <?php /* @var $order Item */ ?>
+            <tr>
+                <td>
+                    <a href="<?php echo Utils::createLink('order-detail', array('id' => $order->getId())) ?>">
+                        <?php echo $order->getId() ?></a>
+                </td>
+                <td>
+                    <a href="<?php echo Utils::createLink('customer-detail', array('id' => $order->getCustomerId())) ?>">
+                    <?php echo Utils::escape($order->getCustomerName()) ?></a>
+                </td>
+                <td>
+                    <?php 
+                    $it = $order->getItem();
+                    if ( $it ) {
+                        echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                                . ' - ' . $it->getSize() . ' ' . $it->getUnit() ); 
+                    }?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($order->getQuantity()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($order->getLocationName()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape(Utils::formatDate($order->getStartDate())) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape(Utils::formatDate($order->getEndDate())) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($order->getFrequency()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($order->getDayOfWeek()) ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>

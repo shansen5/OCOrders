@@ -1,0 +1,74 @@
+<?php
+
+
+//~ Template for add-edit-item.php
+// variables:
+//  $errors - validation errors
+//  $item - submitted Item
+//  $edit - true for EDIT, false for ADD
+
+function error_field($title, array $errors) {
+    foreach ($errors as $error) {
+        /* @var $error Error */
+        if ($error->getSource() == $title) {
+            return ' error-field';
+        }
+    }
+    return '';
+}
+
+/* @var $item Item */
+?>
+
+<h1>
+    <?php if ($edit): ?>
+        <?php echo Utils::escape($item->getType()); ?>
+    <?php else: ?>
+        Add new Item
+    <?php endif; ?>
+</h1>
+
+<?php if (!empty($errors)): ?>
+<ul class="errors">
+    <?php foreach ($errors as $error): ?>
+        <?php /* @var $error Error */ ?>
+        <li><?php echo $error->getMessage(); ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<form action="#" method="post">
+    <fieldset>
+        <div class="field">
+            <label>Type:</label>
+            <input type="text" name="item[type]" value="<?php echo Utils::escape($item->getType()); ?>"
+                   class="text<?php echo error_field('type', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Sub-Type:</label>
+            <input type="text" name="item[sub_type]" value="<?php echo Utils::escape($item->getSubType()); ?>"
+                   class="text<?php echo error_field('sub_type', $errors); ?>"/>
+        </div>
+        <div class="field">
+            <label>Size:</label>
+            <input type="number" step="0.1" min="0.1" name="item[size]" value="<?php echo Utils::escape($item->getSize()); ?>"
+                   class="text<?php echo error_field('size', $errors); ?>"/>
+        </div>
+        <div  class="field">
+            <label>Unit:</label>
+            <select name="item[unit]">
+            <?php foreach (Item::allUnits() as $unit): ?>
+                <option value="<?php echo $unit; ?>"
+                        <?php if ($unit == $item->getUnit()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $unit; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="wrapper">
+            <input type="submit" name="cancel" value="CANCEL" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+        </div>
+    </fieldset>
+</form>

@@ -1,0 +1,24 @@
+<?php
+
+
+//~ Template for location-list.php
+// variables:
+//  $title - page title
+//  $items - Locations to be displayed
+
+?>
+
+<?php if (empty($locations)): ?>
+    <p>No locations found.</p>
+<?php else: ?>
+    <ul class="location-list">
+        <?php foreach ($locations as $location): ?>
+            <?php /* @var $location Item */ ?>
+            <li>
+                <h3><a href="<?php echo Utils::createLink('location-detail', array('id' => $location->getId())) ?>">
+                    <?php echo Utils::escape($location->getName()); ?>
+                    </a></h3>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>

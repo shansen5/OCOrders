@@ -1,0 +1,77 @@
+<?php
+
+//~ Template for customer_detail.php
+// variables:
+//  $customer - Customer to be displayed
+
+/* @var $customer Customer */
+?>
+
+<h1>
+    <?php
+    echo Utils::escape($customer->getFirstName()) . ' ' . Utils::escape($customer->getLastName()); 
+    ?>
+</h1>
+
+<table class="detail">
+    <tr>
+        <td>
+            <tr>
+                <th>Phone</th>
+                <td><?php echo Utils::escape($customer->getPhone()); ?></td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td><?php echo Utils::escape($customer->getEmail()); ?></td>
+            </tr>
+            <tr>
+                <th>Street1</th>
+                <td><?php echo Utils::escape($customer->getStreet1()); ?></td>
+            </tr>
+            <tr>
+                <th>Street2</th>
+                <td><?php echo Utils::escape($customer->getStreet2()); ?></td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td><?php echo Utils::escape($customer->getCity()); ?></td>
+            </tr>
+            <tr>
+                <th>State</th>
+                <td><?php echo Utils::escape($customer->getState()); ?></td>
+            </tr>
+            <tr>
+                <th>Postal Code</th>
+                <td><?php echo Utils::escape($customer->getPostalCode()); ?></td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td><?php echo Utils::escape($customer->getCountry()); ?></td>
+            </tr>
+            <div class="actions">
+                <a href="<?php echo Utils::createLink('add-customer', array('id' => $customer->getId())); ?>"><img src="img/action/edit.png" alt="" title="Edit it." class="icon" /></a>
+                <a href="<?php echo Utils::createLink('customer-delete', array('id' => $customer->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <?php $backLink = Utils::createLink('customer-list', array()); ?>
+    <a href="<?php echo $backLink; ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
+    <a href="<?php echo $backLink; ?>">To the list</a>
+</p>
+
+<div id="delete-dialog" title="Delete this Customer?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Customer will be deleted. Are you sure?</p>
+</div>
+<div id="change-status-dialog">
+    <form id="change-status-form" method="post">
+        <fieldset>
+            <div class="field">
+                <label>Comment:</label>
+                <textarea name="comment" cols="1" rows="1"></textarea>
+            </div>
+        </fieldset>
+    </form>
+</div>

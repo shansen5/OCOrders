@@ -1,0 +1,24 @@
+<?php
+
+
+//~ Template for customer-list.php
+// variables:
+//  $title - page title
+//  $items - Locations to be displayed
+
+?>
+
+<?php if (empty($customers)): ?>
+    <p>No customers found.</p>
+<?php else: ?>
+    <ul class="customer-list">
+        <?php foreach ($customers as $customer): ?>
+            <?php /* @var $customer Item */ ?>
+            <li>
+                <h3><a href="<?php echo Utils::createLink('customer-detail', array('id' => $customer->getId())) ?>">
+                    <?php echo Utils::escape($customer->getFirstName()) . ' ' . Utils::escape($customer->getLastName()); ?>
+                    </a></h3>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>

@@ -1,0 +1,132 @@
+<?php
+
+
+//~ Template for add-order.php
+// variables:
+//  $errors - validation errors
+//  $order - submitted Order
+//  $edit - true for EDIT, false for ADD
+
+function error_field($title, array $errors) {
+    foreach ($errors as $error) {
+        /* @var $error Error */
+        if ($error->getSource() == $title) {
+            return ' error-field';
+        }
+    }
+    return '';
+}
+
+/* @var $order Order */
+?>
+
+<h1>
+    <?php if ($edit): ?>
+        <?php 
+        echo "Order: " . Utils::escape($order->getId()); 
+        ?>
+    <?php else: ?>
+        Add new Order
+    <?php endif; ?>
+</h1>
+
+<?php if (!empty($errors)): ?>
+<ul class="errors">
+    <?php foreach ($errors as $error): ?>
+        <?php /* @var $error Error */ ?>
+        <li><?php echo $error->getMessage(); ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<form action="#" method="post">
+    <fieldset>
+        <div  class="field">
+            <label>Customer:</label>
+            <select name="order[customer_id]">
+            <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
+                <option value="<?php echo $cust[id]; ?>"
+                        <?php if ($cust[id] == $order->getCustomerId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div  class="field">
+            <label>Item:</label>
+            <select name="order[item_id]">
+            <?php foreach (Utils::getAllItems() as $it): ?>
+                <option value="<?php echo $it->getId(); ?>"
+                        <?php if ($it->getId() == $order->getItemId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php 
+                        if ( $it ) {
+                            echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                                . ' - ' . $it->getSize() . ' ' . $it->getUnit() );
+                        } ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="field">
+            <label>Quantity:</label>
+            <input type="number" min="1" name="order[quantity]" 
+                <?php if ($edit) { echo 'value="' . $order->getQuantity(); } else { echo 'value="1'; } ?>"
+                   class="text<?php echo error_field('quantity', $errors); ?>"/>
+        </div>
+        <div  class="field">
+            <label>Location:</label>
+            <select name="order[pickup_location_id]">
+            <?php foreach (Utils::getAllLocationIdAndName() as $loc): ?>
+                <option value="<?php echo $loc[id]; ?>"
+                        <?php if ($loc[id] == $order->getLocationId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $loc[name] . ", " . $loc[id]; ?></option>
+              
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="field">
+            <label>Start Date:</label>
+            <input type="text" name="order[start_date]" 
+                <?php if ($edit) { echo 'value="' . Utils::formatDate($order->getStartDate()); } ?>"
+                   class="text datepicker<?php echo error_field('start_date', $errors); ?>" />
+        </div>
+        <div class="field">
+            <label>End Date:</label>
+            <input type="text" name="order[end_date]" 
+                <?php if ($edit) { echo 'value="' . Utils::formatDate($order->getEndDate()); } ?>"
+                   class="text datepicker<?php echo error_field('end_date', $errors); ?>" />
+        </div>
+        <div  class="field">
+            <label>Day of Week:</label>
+            <select name="order[day_of_week]">
+            <?php foreach (Order::allDays() as $day): ?>
+                <option value="<?php echo $day; ?>"
+                        <?php if ($day == $order->getDayOfWeek()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $day; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div  class="field">
+            <label>Frequency:</label>
+            <select name="order[frequency]">
+            <?php foreach (Order::allFrequencies() as $frequency): ?>
+                <option value="<?php echo $frequency; ?>"
+                        <?php if ($frequency == $order->getFrequency()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $frequency; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="wrapper">
+            <input type="submit" name="cancel" value="CANCEL" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+        </div>
+    </fieldset>
+</form>
