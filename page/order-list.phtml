@@ -59,7 +59,13 @@
                     <?php echo Utils::escape($order->getFrequency()) ?>
                 </td>
                 <td>
-                    <?php echo Utils::escape($order->getDayOfWeek()) ?>
+                    <?php 
+                    if ( $order->getFrequency() == 'DAILY') {
+                        echo '---';
+                    } else {
+                        echo Utils::escape($order->getDayOfWeek()); 
+                    }
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>

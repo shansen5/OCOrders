@@ -307,3 +307,7 @@ ul#flashes li {
 .ui-widget button {
     width: 70px;
 }
+
+.table { display: table; } 
+.table>* { display: table-row; }
+.table>*>* { display: table-cell; }

@@ -52,13 +52,41 @@
                 <th>Frequency</th>
                 <td><?php echo Utils::escape($order->getFrequency()); ?></td>
             </tr>
+            <?php if ($order->getFrequency() == 'N-WEEKLY') : ?>
+            <tr>
+                <th>N Weeks</th>
+                <td><?php echo Utils::escape($order->getNWeekly()); ?></td>
+            </tr>
+            <?php endif ?>
+            <?php if ($order->getFrequency() == 'DAILY') : ?>
+            <tr>
+                <th>Skip Days</th>
+                <td><?php 
+                $multi = false;
+                foreach ( $order->allDays() as $d ) {
+                    if ( $order->skipDay( $d ) ) {
+                        if ( $multi ) {
+                            echo ', ';
+                        }
+                        echo $d; 
+                        $multi = true;
+                    }
+                }
+                ?></td>
+            </tr>
+            <?php else : ?>
             <tr>
                 <th>Day of Week</th>
                 <td><?php echo Utils::escape($order->getDayOfWeek()); ?></td>
             </tr>
+            <?php endif ?>
             <tr>
                 <th>Location</th>
                 <td><?php echo Utils::escape($order->getLocationName()); ?></td>
+            </tr>
+            <tr>
+                <th>Pickup Time</th>
+                <td><?php echo $order->getPickupTime()->format( 'H:i' ); ?></td>
             </tr>
             <tr>
                 <th>Order Date</th>

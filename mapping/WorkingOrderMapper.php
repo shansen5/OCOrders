@@ -59,7 +59,8 @@ final class WorkingOrderMapper {
     }
 
     private static function createDateTime($input) {
-        return DateTime::createFromFormat('Y-m-d', $input);
+        $d = DateTime::createFromFormat('Y-m-d', $input);
+        return $d;
     }
 
 }

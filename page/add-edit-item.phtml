@@ -22,7 +22,7 @@ function error_field($title, array $errors) {
 
 <h1>
     <?php if ($edit): ?>
-        <?php echo Utils::escape($item->getType()); ?>
+        <?php echo Utils::escape($item->getType() . ' - ' . $item->getSubType()); ?>
     <?php else: ?>
         Add new Item
     <?php endif; ?>
@@ -68,7 +68,7 @@ function error_field($title, array $errors) {
         </div>
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
-            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'UPDATE' : 'ADD'; ?>" class="submit" />
         </div>
     </fieldset>
 </form>

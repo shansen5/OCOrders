@@ -39,9 +39,9 @@ final class OrderDao {
      */
     public function findById($id) {
         $row = $this->query('SELECT id, customer_id, item_id,
-                        start_date, end_date, 
-                        frequency, day_of_week, pickup_location_id, quantity,
-                        order_date, user_id
+                        start_date, end_date, n_weekly, daily_skip,
+                        frequency, day_of_week, pickup_location_id, pickup_time,
+                        quantity, order_date, user_id
                         FROM orders 
                         WHERE id = ' . (int) $id)->fetch();
         if (!$row) {
@@ -100,9 +100,9 @@ final class OrderDao {
 
     private function getFindSql(OrderSearchCriteria $search = null) {
         $sql = 'SELECT o.id, o.customer_id, o.item_id, c.last_name, c.first_name,
-                        o.start_date, o.end_date, 
-                        o.frequency, o.day_of_week, o.pickup_location_id, o.quantity,
-                        o.order_date, o.user_id
+                        o.start_date, o.end_date, o.n_weekly, o.daily_skip,
+                        o.frequency, o.day_of_week, o.pickup_location_id, o.pickup_time,
+                        o.quantity, o.order_date, o.user_id
                         FROM orders o, customers c
                         WHERE o.customer_id = c.id 
                         ORDER BY c.last_name, c.first_name';
@@ -116,11 +116,11 @@ final class OrderDao {
     private function insert(Order $order) {
         $order->setId( null );
         $sql = 'INSERT INTO orders (id, customer_id, item_id, start_date, end_date,
-                        frequency, day_of_week, pickup_location_id, quantity,
-                        order_date, user_id)
+                        frequency, n_weekly, daily_skip, day_of_week, 
+                        pickup_location_id, pickup_time, quantity, order_date, user_id)
                 VALUES (:id, :customer_id, :item_id, :start_date, :end_date,
-                        :frequency, :day_of_week, :pickup_location_id, :quantity,
-                        :order_date, :user_id)';
+                        :frequency, :n_weekly, :daily_skip, :day_of_week, 
+                        :pickup_location_id, :pickup_time, :quantity, :order_date, :user_id)';
         $result = $this->execute($sql, $order, self::ORDER_INSERT);
        
         return $result;
@@ -138,8 +138,11 @@ final class OrderDao {
                 start_date = :start_date,
                 end_date = :end_date,
                 frequency = :frequency,
+                n_weekly = :n_weekly,
+                daily_skip = :daily_skip,
                 day_of_week = :day_of_week,
                 pickup_location_id = :pickup_location_id,
+                pickup_time = :pickup_time,
                 quantity = :quantity,
                 order_date = :order_date,
                 user_id = :user_id
@@ -176,11 +179,14 @@ final class OrderDao {
                     ':start_date' => self::formatDateTime($order->getStartDate()),
                     ':end_date' => self::formatDateTime($order->getEndDate()),
                     ':frequency' => $order->getFrequency(),
+                    ':n_weekly' => $order->getNWeekly(),
+                    ':daily_skip' => $order->getDailySkip(),
                     ':day_of_week' => $order->getDayOfWeek(),
                     ':pickup_location_id' => $order->getLocationId(),
+                    ':pickup_time' => $order->getPickupTime()->format( 'H:i' ),
                     ':item_id' => $order->getItemId(),
                     ':quantity' => $order->getQuantity(),
-                    ':order_date' => $this->formatDateTime(new DateTime()),
+                    ':order_date' => self::formatDateTime(new DateTime()),
                     ':user_id' => Utils::getUserIdByName()
                     );
                 break;

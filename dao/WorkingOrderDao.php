@@ -73,6 +73,7 @@ final class WorkingOrderDao {
         if ( ! $order ) {
             return null;
         }
+        $this->deleteOrder( $order );
         if ( $order->getFrequency() == 'MONTHLY' ) {
             // Handle this case separately
             $this->saveMonthlyOrders( $order );
@@ -82,11 +83,7 @@ final class WorkingOrderDao {
                 $working_date = $order->getStartDate();
             }
             if ( $order->getFrequency() == 'ONCE' ) {
-                $new_wo = new WorkingOrder( $order );
-                $new_wo->setDeliveryDate( $working_date );
-                if ( ! $this->save( $new_wo )) {
-                    throw new Exception( 'Failed to save WorkingOrder' . $working_date );
-                }
+                $this->createWorkingOrder( $order, $working_date );
                 return;
             }
             // if ( $order->getFrequency() != 'WEEKLY' && $order->getFrequency() != 'BI-WEEKLY' ) {
@@ -98,25 +95,28 @@ final class WorkingOrderDao {
             $intervalMon = new DateInterval( 'P1M' );
             $interval1 = new DateInterval( 'P1D' );
             while ( $working_date < $order->getEndDate() ) {
-                if ( $working_date->format( "D" ) == $order_dw ) {
-                    $new_wo = new WorkingOrder( $order );
-                    $new_wo->setDeliveryDate( $working_date );
-                    if ( ! $this->save( $new_wo )) {
-                        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
-                    } 
+                $current_dw = $working_date->format( "D" );
+                if ( $order->getFrequency() == 'DAILY' ) {
+                    if ( ! $order->skipDay( $current_dw ) ) {
+                        $this->createWorkingOrder( $order, $working_date );
+                    }
+                    $working_date->add( $interval1 );
+                } else if ( $current_dw == $order_dw ) {
+                    $this->createWorkingOrder( $order, $working_date );
                     if ( $order->getFrequency() == 'WEEKLY' ) {
                         $working_date->add( $interval7 );
-                    }
-                    if ( $order->getFrequency() == 'BI-WEEKLY' ) {
-                        $working_date->add( $interval14 );
-                    }
-                    if ( $order->getFrequency() == 'MONTHLY' ) {
+                    } else if ( $order->getFrequency() == 'BI-WEEKLY' ) {
+                            $working_date->add( $interval14 );
+                    } else if ( $order->getFrequency() == 'N-WEEKLY' ) {
+                        foreach ( range( 1, $order->getNWeekly() ) as $i ) {
+                            $working_date->add( $interval7 );
+                        }
+                    } else if ( $order->getFrequency() == 'MONTHLY' ) {
                         if ( !$foundMonthly1st ) {
                             $foundMonthly1st = true;
                         }
                         $working_date->add( $intervalMon );
                     }
-
                 } else {
                     $working_date->add( $interval1 );
                 }
@@ -126,6 +126,14 @@ final class WorkingOrderDao {
         return $order;
     }
 
+private function createWorkingOrder( $order, $working_date ) {
+    
+                    $new_wo = new WorkingOrder( $order );
+                    $new_wo->setDeliveryDate( $working_date );
+                    if ( ! $this->save( $new_wo )) {
+                        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
+                    } 
+}   
 
     /**
      * Create WorkingOrder records from the Order. {@link Order}.
@@ -179,11 +187,7 @@ private function saveMonthlyOrders( Order $order ) {
                     }
                 }
             }
-            $new_wo = new WorkingOrder( $order );
-            $new_wo->setDeliveryDate( $working_date );
-            if ( ! $this->save( $new_wo )) {
-                throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
-            } 
+            $this->createWorkingOrder( $order, $working_date );
             $working_date->add( $intervalMon );
             if (( $working_date->format( "m" ) == 1 && $month_todo == 12 ) ||
                 ( $working_date->format( "m" ) > $month_todo )) {
@@ -208,9 +212,8 @@ private function saveMonthlyOrders( Order $order ) {
     }
 
     /**
-     * Delete {@link Working} by identifier.
-     * @param int $id {@link } identifier
-     * @return bool <i>true</i> on success, <i>false</i> otherwise
+     * Delete {@link id} by identifier.
+     * @param int $order {@link id} identifier
      */
     public function delete($id) {
         $sql = '
@@ -221,7 +224,24 @@ private function saveMonthlyOrders( Order $order ) {
         $this->executeStatement($statement, array(
             ':id' => $id
         ));
-        return $statement->rowCount() == 1;
+    }
+
+    /**
+     * Delete {@link Order} by identifier.
+     * @param int $order {@link Order} 
+     */
+    public function deleteOrder(Order $order) {
+        $sql = '
+            DELETE FROM working_orders 
+            WHERE
+                order_id = :order_id AND delivery_date >= :delivery_date';
+        $statement = $this->getDb()->prepare($sql);
+        $d = new DateTime();
+        $now = $d->format('Y-m-d');
+        $this->executeStatement($statement, array(
+            ':order_id' => $order->getId(),
+            ':delivery_date' => $now
+        ));
     }
 
     /**

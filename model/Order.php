@@ -4,14 +4,15 @@
  * Model class representing one Order item.
  */
 final class Order {
-
-
+   
     /** @var int */
     private $id;
     /** @var int */
     private $customer_id;
     /** @var int */
     private $pickup_location_id;
+    /** @var Time */
+    private $pickup_time;
     /** @var int */
     private $item_id;
     /** @var DateTime */
@@ -20,6 +21,10 @@ final class Order {
     private $end_date;
     /** @var int */
     private $frequency;
+    /** @var int */
+    private $n_weekly;
+    /** @var int */
+    private $daily_skip;
     /** @var int */
     private $day_of_week;
     /** @var int */
@@ -43,7 +48,7 @@ final class Order {
     }
 
     public static function allFrequencies() {
-        return array( 'DAILY', 'WEEKLY', 'BI-WEEKLY', 'MONTHLY', 'ONCE');
+        return array( 'DAILY', 'WEEKLY', 'BI-WEEKLY', 'N-WEEKLY', 'MONTHLY', 'ONCE');
     }
     /**
      * Create new {@link Order} with default properties set.
@@ -107,6 +112,17 @@ final class Order {
     }
 
     /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getPickupTime() {
+        return $this->pickup_time;
+    }
+
+    public function setPickupTime($t) {
+        $this->pickup_time = $t;
+    }
+
+    /**
      * @return DateTime
      */
     public function getStartDate() {
@@ -150,6 +166,44 @@ final class Order {
         $this->frequency = $frequency;
     }
 
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getNWeekly() {
+        return $this->n_weekly;
+    }
+
+    public function setNWeekly($n) {
+        $this->n_weekly = (int) $n;
+    }
+
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getDailySkip() {
+        return $this->daily_skip;
+    }
+
+    public function setDailySkip($n) {
+        $this->daily_skip = (int) $n;
+    }
+
+    /**
+     * $dow is a 3-letter day of week abbreviation
+     * @return true if the day should be skipped for DAILY orders
+     */
+    
+    public function skipDay( $dow ) {
+        $allDays = $this->allDays();
+        if ( !$this->daily_skip || !in_array( $dow, $allDays )) {
+            return false;
+        }
+        $pos = array_search( $dow, $allDays ) + 1;
+        // $pos will be 1...7 for Sun...Sat
+        $val = $this->daily_skip & 1 << $pos;
+        return $val != 0;
+    }
+    
     /**
      * @return int
      */

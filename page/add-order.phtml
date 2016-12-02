@@ -89,6 +89,12 @@ function error_field($title, array $errors) {
             </select>
         </div>
         <div class="field">
+            <label>Pickup Time:</label>
+            <input type="time" name="order[pickup_time]" 
+                <?php if ($edit) { echo 'value="' . $order->getPickupTime()->format( 'H:i' ); } ?>"
+                   class="text<?php echo error_field('pickup_time', $errors); ?>" />
+        </div>
+        <div class="field">
             <label>Start Date:</label>
             <input type="text" name="order[start_date]" 
                 <?php if ($edit) { echo 'value="' . Utils::formatDate($order->getStartDate()); } ?>"
@@ -124,9 +130,77 @@ function error_field($title, array $errors) {
             <?php endforeach; ?>
             </select>
         </div>
+        <div class="field">
+            <div class="wrapper">
+                <label>Daily skip:</label>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[1]" value="0" />
+                    <input type="checkbox" name="dayskip[1]" value="1"
+                        <?php if ($order->skipDay( 'Sun' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                            >Su</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[2]" value="0" />
+                    <input type="checkbox" name="dayskip[2]" value="1"
+                        <?php if ($order->skipDay( 'Mon' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >M</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[3]" value="0" />
+                    <input type="checkbox" name="dayskip[3]" value="1"
+                        <?php if ($order->skipDay( 'Tue' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Tu</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[4]" value="0" />
+                    <input type="checkbox" name="dayskip[4]" value="1"
+                        <?php if ($order->skipDay( 'Wed' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >W</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[5]" value="0" />
+                    <input type="checkbox" name="dayskip[5]" value="1"
+                        <?php if ($order->skipDay( 'Thu' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Th</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[6]" value="0" />
+                    <input type="checkbox" name="dayskip[6]" value="1"
+                        <?php if ($order->skipDay( 'Fri' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >F</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[7]" value="0" />
+                    <input type="checkbox" name="dayskip[7]" value="1"
+                        <?php if ($order->skipDay( 'Sat' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Sa</input>&nbsp;
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label>N-Weekly N:</label>
+            <input type="number" min="1" name="order[n_weekly]" 
+                <?php if ($edit) { echo 'value="' . $order->getNWeekly(); } else { echo 'value="1'; } ?>"
+                   class="text<?php echo error_field('n_weekly', $errors); ?>"/>
+        </div>
+
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
-            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? 'UPDATE' : 'ADD'; ?>" class="submit" />
         </div>
     </fieldset>
 </form>
