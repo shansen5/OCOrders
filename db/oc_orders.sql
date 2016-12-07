@@ -143,7 +143,7 @@ INSERT INTO `locations` (`id`, `name`, `address_id`, `zone`) VALUES
 (1, 'Oystercatcher restaurant', 3, ''),
 (6, 'Greenbank', 13, ''),
 (7, '3 Sisters Market', 20, ''),
-(8, 'Fraser\'s', 26, '');
+(8, "Fraser\'s", 26, '');
 
 -- --------------------------------------------------------
 

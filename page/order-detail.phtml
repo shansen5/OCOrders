@@ -99,6 +99,7 @@
                 ?></td>
             </tr>
             <div class="actions">
+                <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
                 <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId())); ?>"><img src="img/action/edit.png" alt="" title="Edit it." class="icon" /></a>
                 <a href="<?php echo Utils::createLink('order-delete', array('id' => $order->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
             </div>

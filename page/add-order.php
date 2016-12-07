@@ -3,8 +3,12 @@
 $errors = array();
 $order = null;
 $edit = array_key_exists('id', $_GET);
+$clone = array_key_exists('clone', $_GET );
 if ($edit) {
     $order = Utils::getOrderByGetId();
+    if ( $clone ) {
+        $order->setId( 0 );
+    }
 } else {
     // set defaults
     $order = new Order();

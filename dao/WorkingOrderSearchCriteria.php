@@ -62,6 +62,4 @@ final class WorkingOrderSearchCriteria {
     public function getCustomerId() {
         return $this->customer_id;
     }
-
-
 }

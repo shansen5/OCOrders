@@ -58,7 +58,7 @@ final class OrderDao {
      * @return Order saved {@link Order} instance
      */
     public function save(Order $order) {
-        if ($order->getId() === null) {
+        if ( $order->getId() === null || $order->getId() == 0 ) {
             return $this->insert($order);
         }
         return $this->update($order);
@@ -104,8 +104,13 @@ final class OrderDao {
                         o.frequency, o.day_of_week, o.pickup_location_id, o.pickup_time,
                         o.quantity, o.order_date, o.user_id
                         FROM orders o, customers c
-                        WHERE o.customer_id = c.id 
-                        ORDER BY c.last_name, c.first_name';
+                        WHERE o.customer_id = c.id ';
+        if ( $search && $search->hasFilter() ) {
+            if ( $search->getCustomerId() ) {
+                $sql .= ' AND o.customer_id = ' . $search->getCustomerId();
+            }
+        }
+        $sql .= ' ORDER BY c.last_name, c.first_name';
         return $sql;
     }
 

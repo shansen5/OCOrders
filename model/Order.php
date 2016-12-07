@@ -57,6 +57,7 @@ final class Order {
         $now = new DateTime();
         $this->setStartDate($now);
         $this->setEndDate($now);
+        $this->setPickupTime( DateTime::createFromFormat( 'g:i A', "1:00 PM"));
     }
 
     //~ Getters & setters
@@ -69,9 +70,6 @@ final class Order {
     }
 
     public function setId($id) {
-        if ($this->id !== null && $this->id != $id) {
-            throw new Exception('Cannot change order id to ' . $id . ', already set to ' . $this->id);
-        }
         $this->id = (int) $id;
     }
 
@@ -83,9 +81,6 @@ final class Order {
     }
 
     public function setCustomerId($id) {
-        if ($this->customer_id !== null && $this->customer_id != $id) {
-            throw new Exception('Cannot change customer id to ' . $id . ', already set to ' . $this->customer_id);
-        }
         $this->customer_id = (int) $id;
     }
 

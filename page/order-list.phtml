@@ -8,6 +8,42 @@
 
 ?>
 
+<div id="twocolwrapper">
+    <div id="column1">
+        <form action="#" method="post">
+            <fieldset>
+                <div  class="field">
+                    <label>Customer:</label>
+                    <select name="customer_id">
+                        <option value="0" >All Customers</option>
+                    <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
+                        <option value="<?php echo $cust[id]; ?>"
+                                <?php if ($cust[id] == $_POST['customer_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="wrapper">
+                    <input type="submit" name="save" value="FILTER" class="submit" />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="sidebar">
+        <form action="#" method="post">
+            <label>Count:  </label><?php echo sizeof( $orders ); ?>
+            <div class="wrapper">
+                <input type="hidden" name="customer_id" value="<?php 
+                echo $_POST['customer_id']; 
+                ?>">
+                <input type="submit" name="download_orders" value="Download" class="submit-left" />
+            </div>
+    </div>
+    <div id="cleared"></div>
+</div>
+
 <?php if (empty($orders)): ?>
     <p>No orders found.</p>
 <?php else: ?>

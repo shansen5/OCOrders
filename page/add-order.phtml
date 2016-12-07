@@ -22,9 +22,12 @@ function error_field($title, array $errors) {
 
 <h1>
     <?php if ($edit): ?>
-        <?php 
-        echo "Order: " . Utils::escape($order->getId()); 
-        ?>
+        <?php if ($clone): ?>Modify cloned Order
+        <?php else: ?>
+            <?php 
+            echo "Order: " . Utils::escape($order->getId()); 
+            ?>
+        <?php endif; ?>
     <?php else: ?>
         Add new Order
     <?php endif; ?>
@@ -200,7 +203,7 @@ function error_field($title, array $errors) {
 
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
-            <input type="submit" name="save" value="<?php echo $edit ? 'UPDATE' : 'ADD'; ?>" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? ( $clone ? 'INSERT' : 'UPDATE' ) : 'ADD'; ?>" class="submit" />
         </div>
     </fieldset>
 </form>

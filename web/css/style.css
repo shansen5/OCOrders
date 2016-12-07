@@ -132,6 +132,13 @@ textarea {
 form input.submit {
     float: right;
     color: #4c7cbd;
+    margin-right: 5px;
+    width: 70px;
+    font-weight: bold;
+}
+form input.submit-left {
+    float: left;
+    color: #4c7cbd;
     margin-left: 5px;
     width: 70px;
     font-weight: bold;
