@@ -2,6 +2,13 @@
 
 $title = 'Working Orders';
 
+if ( !isset( $_POST['start_date'])) {
+    $aday = new DateTime();
+    $_POST['start_date'] = Utils::formatDate( $aday );
+    $dayInterval = new DateInterval( "P1D" );
+    $aday->add( $dayInterval );
+    $_POST['end_date'] = Utils::formatDate( $aday );
+}
 $dao = new WorkingOrderDao();
 $search = new WorkingOrderSearchCriteria();
 $search->setCustomerId( $_POST['customer_id'] );
@@ -31,6 +38,9 @@ function download_by_types( $working_orders ) {
     $filename = 'logs/oc_orders_types.csv';
     $handle = fopen( $filename, 'w' );
     if ( $handle ) {
+        fwrite( $handle, "Working Orders by Type of Item\n" );
+        fwrite( $handle, "Start:, " . $_POST['start_date'] . ", End:, " . $_POST['end_date'] . "\n" );
+
         fwrite( $handle, "Delivery Date, Item Type, Subtype, Size, Unit, Quantity\n" );
         usort( $working_orders, function( WorkingOrder $a, WorkingOrder $b )
         {
@@ -48,13 +58,6 @@ function download_by_types( $working_orders ) {
                 }
             }
         });
-       /**
-        foreach ($working_orders as $working_order) {
-            fwrite( $handle, Utils::formatDate( $working_order->getDeliveryDate() ) . ', ' .
-                   $working_order->getItemId() . "\n" );
-        }
-        * 
-        */
         $total_sum = 0;
         $date_sum = 0;
         $total_item_sum = array();
@@ -132,6 +135,8 @@ function download_all( $working_orders ) {
     $filename = 'logs/oc_orders.csv';
     $handle = fopen( $filename, 'w' );
     if ( $handle ) {
+        fwrite( $handle, "Working Orders by Filter\n" );
+        fwrite( $handle, "Start:, " . $_POST['start_date'] . ", End:, " . $_POST['end_date'] . "\n" );
         fwrite( $handle, "Item Type, Subtype, Size, Unit, Delivery Date, Location, Quantity, Customer Last, Customer First\n" );
         foreach ($working_orders as $working_order) {
             $it = $working_order->getItem();
