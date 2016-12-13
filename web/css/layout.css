@@ -1,12 +1,12 @@
 #main {
-    width: 1000px;
+    width: 1200px;
     margin: 0 auto;
     position: relative;
 }
 
 #header {
     height: 245px;
-    background: url(../img/header-bg.jpg) no-repeat left top;
+    background: url(../img/header-bg.jpg) no-repeat center top;
 }
 #header, #content, #footer {
     font-size: 0.75em;
