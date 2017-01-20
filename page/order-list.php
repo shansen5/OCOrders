@@ -3,6 +3,7 @@
 $dao = new OrderDao();
 $search = new OrderSearchCriteria();
 $search->setCustomerId( $_POST['customer_id'] );
+$search->setAccountId( $_POST['account_id'] );
 
 $title = 'Orders';
 $orders = $dao->find( $search );
@@ -18,10 +19,10 @@ function download_orders( $orders ) {
      * List the orders, with a summation of the number of that type
      */
     $dir = getcwd();
-    $filename = 'logs/oc_orders_orders.csv';
+    $filename = 'logs/oc_orders' . date('Y-m-d-H-mi') . '.csv';
     $handle = fopen( $filename, 'w' );
     if ( $handle ) {
-        fwrite( $handle, "Last Name, First Name, Item Type, Subtype, Size, Unit," . 
+        fwrite( $handle, "Account, Customer, Code, Name, Size, Unit," . 
                 " Start Date, End Date, Frequency, Day of Week, Skip Days, Pickup Time," . 
                 " Location, Quantity, \n" );
         foreach ($orders as $order) {
@@ -38,14 +39,15 @@ function download_orders( $orders ) {
             }
             $it = $order->getItem();
             if ( $it ) {
-                fwrite( $handle, $order->getCustomerName(). ', ' . $it->getType() . ', ' . $it->getSubtype() . ', '
+                fwrite( $handle, $order->getAccountName(). ', ' 
+                    . $order->getAccount()->getDefaultCustomerId() == 0 ? '---' : $order->getCustomerName(). ', ' . $it->getCode() . ', ' . $it->getName() . ', '
                     . $it->getSize() . ', ' . $it->getUnit() . ', '
                     . Utils::formatDate( $order->getStartDate() ) . ', '
                     . Utils::formatDate( $order->getEndDate() ) . ', '
                     . $order->getFrequency() . ', '
                     . $order->getDayOfWeek() . ', '
                     . $days_skipped . ', '
-                    . $order->getPickupTime()->format( 'H:i' ) . ', '
+                    . $order->getDeliveryTime()->format( 'H:i' ) . ', '
                     . $order->getLocationName() . ', '
                     . $order->getQuantity()  . "\n" );
             } 

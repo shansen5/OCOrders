@@ -27,10 +27,11 @@ if (array_key_exists('cancel', $_POST)) {
         $day_byte += (int)$_POST['dayskip'][$idx] * ( 1 << $idx );
     }
     $data = array(
+        'account_id' => $_POST['order']['account_id'],
         'customer_id' => $_POST['order']['customer_id'],
         'item_id' => $_POST['order']['item_id'],
         'pickup_location_id' => $_POST['order']['pickup_location_id'],
-        'pickup_time' => $_POST['order']['pickup_time'],
+        'delivery_time' => $_POST['order']['delivery_time'],
         'start_date' => $_POST['order']['start_date'],
         'end_date' => $_POST['order']['end_date'],
         'frequency' => $_POST['order']['frequency'],

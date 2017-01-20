@@ -1,10 +1,10 @@
 <?php
 
 
-//~ Template for add-edit-item.php
+//~ Template for add-edit-account.php
 // variables:
 //  $errors - validation errors
-//  $item - submitted Item
+//  $account - submitted Account
 //  $edit - true for EDIT, false for ADD
 
 function error_field($title, array $errors) {
@@ -17,14 +17,14 @@ function error_field($title, array $errors) {
     return '';
 }
 
-/* @var $item Item */
+/* @var $account Account */
 ?>
 
 <h1>
     <?php if ($edit): ?>
-        <?php echo Utils::escape($item->getCode() . ' - ' . $item->getName()); ?>
+        <?php echo Utils::escape($account->getName()); ?>
     <?php else: ?>
-        Add new Item
+        Add new Account
     <?php endif; ?>
 </h1>
 
@@ -40,29 +40,27 @@ function error_field($title, array $errors) {
 <form action="#" method="post">
     <fieldset>
         <div class="field">
-            <label>Code:</label>
-            <input type="text" name="item[type]" value="<?php echo Utils::escape($item->getCode()); ?>"
-                   class="text<?php echo error_field('type', $errors); ?>"/>
-        </div>
-        <div class="field">
             <label>Name:</label>
-            <input type="text" name="item[sub_type]" value="<?php echo Utils::escape($item->getName()); ?>"
-                   class="text<?php echo error_field('sub_type', $errors); ?>"/>
+            <input type="text" name="account[name]" value="<?php echo Utils::escape($account->getName()); ?>"
+                   class="text<?php echo error_field('name', $errors); ?>"/>
         </div>
         <div class="field">
-            <label>Size:</label>
-            <input type="number" step="0.1" min="0.1" name="item[size]" value="<?php echo Utils::escape($item->getSize()); ?>"
-                   class="text<?php echo error_field('size', $errors); ?>"/>
+        <p>If this account will always be associated with one customer, select the customer.  Otherwise leave the customer as "Varied".
         </div>
         <div  class="field">
-            <label>Unit:</label>
-            <select name="item[unit]">
-            <?php foreach (Item::allUnits() as $unit): ?>
-                <option value="<?php echo $unit; ?>"
-                        <?php if ($unit == $item->getUnit()): ?>
+            <label>Customer:</label>
+            <select name="account[default_customer_id]">
+                <option value="0" 
+                        <?php if (0 == $account->getDefaultCustomerId()): ?>
                             selected="selected"
                         <?php endif; ?>
-                        ><?php echo $unit; ?></option>
+                            >Varied</option>
+            <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
+                <option value="<?php echo $cust[id]; ?>"
+                        <?php if ($cust[id] == $account->getDefaultCustomerId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
             <?php endforeach; ?>
             </select>
         </div>
@@ -74,7 +72,7 @@ function error_field($title, array $errors) {
 </form>
 <p>
     <?php 
-    $backLink = Utils::createLink('item-list', array()); 
+    $backLink = Utils::createLink('account-list', array()); 
     ?>
     <a href="<?php 
     echo $backLink; 

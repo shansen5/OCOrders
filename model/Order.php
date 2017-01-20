@@ -8,11 +8,13 @@ final class Order {
     /** @var int */
     private $id;
     /** @var int */
+    private $account_id;
+    /** @var int */
     private $customer_id;
     /** @var int */
     private $pickup_location_id;
     /** @var Time */
-    private $pickup_time;
+    private $delivery_time;
     /** @var int */
     private $item_id;
     /** @var DateTime */
@@ -36,6 +38,8 @@ final class Order {
     
     /** @var Location */
     private $pickup_location;
+    /** @var Account */
+    private $account;
     /** @var Customer */
     private $customer;
     /** @var Item */
@@ -57,7 +61,7 @@ final class Order {
         $now = new DateTime();
         $this->setStartDate($now);
         $this->setEndDate($now);
-        $this->setPickupTime( DateTime::createFromFormat( 'g:i A', "1:00 PM"));
+        $this->setDeliveryTime( DateTime::createFromFormat( 'g:i A', "1:00 PM"));
     }
 
     //~ Getters & setters
@@ -71,6 +75,17 @@ final class Order {
 
     public function setId($id) {
         $this->id = (int) $id;
+    }
+
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getAccountId() {
+        return $this->account_id;
+    }
+
+    public function setAccountId($id) {
+        $this->account_id = (int) $id;
     }
 
     /**
@@ -109,12 +124,12 @@ final class Order {
     /**
      * @return int <i>null</i> if not persistent
      */
-    public function getPickupTime() {
-        return $this->pickup_time;
+    public function getDeliveryTime() {
+        return $this->delivery_time;
     }
 
-    public function setPickupTime($t) {
-        $this->pickup_time = $t;
+    public function setDeliveryTime($t) {
+        $this->delivery_time = $t;
     }
 
     /**
@@ -208,6 +223,39 @@ final class Order {
 
     public function setDayOfWeek($day_of_week) {
         $this->day_of_week = $day_of_week;
+    }
+
+    /**
+     * @return Account
+     */
+    public function getAccount() {
+        /*
+         * If $customer is null, use the $account_id to ask for it from 
+         * AccountDao.
+         */
+        if ($this->account == null ) {
+            $dao = new AccountDao();
+            $this->account = $dao->findById( $this->account_id );
+        }
+        return $this->account;
+    }
+
+    public function setAccount($account) {
+        $this->account = $account;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getAccountName() {
+        /*
+         * If $account is null, call getAccount().
+         * AccountDao.
+         */
+        if ( $this->getAccount() != null ) {
+            return $this->account->getName();
+        }
+        return null;
     }
 
     /**

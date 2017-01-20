@@ -9,12 +9,21 @@
 final class OrderSearchCriteria {
 
     private $customer_id = null;
+    private $account_id = null;
 
     public function hasFilter() {
-        if ( $this->customer_id ) {
+        if ( $this->customer_id || $this->account_id ) {
             return true;
         }
         return false;
+    }
+
+    public function setAccountId( $id ) {
+        $this->account_id = $id;
+    }
+ 
+    public function getAccountId() {
+        return $this->account_id;
     }
 
     public function setCustomerId( $id ) {

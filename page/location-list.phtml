@@ -8,6 +8,19 @@
 
 ?>
 
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-location'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Location" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
 <?php if (empty($locations)): ?>
     <p>No locations found.</p>
 <?php else: ?>

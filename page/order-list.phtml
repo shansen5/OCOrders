@@ -8,10 +8,36 @@
 
 ?>
 
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-order'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Order" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
 <div id="twocolwrapper">
     <div id="column1">
         <form action="#" method="post">
             <fieldset>
+                <div  class="field">
+                    <label>Account:</label>
+                    <select name="account_id">
+                        <option value="0" >All Accounts</option>
+                    <?php foreach (Utils::getAllAccountIdAndName() as $account): ?>
+                        <option value="<?php echo $account[id]; ?>"
+                                <?php if ($account[id] == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $account[name] . ", " . $account[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
                 <div  class="field">
                     <label>Customer:</label>
                     <select name="customer_id">
@@ -50,6 +76,7 @@
     <table class="detail">
         <tr>
             <th>ID</th> 
+            <th>Account</th>
             <th>Customer</th>
             <th>Item</th>
             <th>Quantity</th>
@@ -68,6 +95,10 @@
                         <?php echo $order->getId() ?></a>
                 </td>
                 <td>
+                    <a href="<?php echo Utils::createLink('account-detail', array('id' => $order->getAccountId())) ?>">
+                    <?php echo Utils::escape($order->getAccountName()) ?></a>
+                </td>
+                <td>
                     <a href="<?php echo Utils::createLink('customer-detail', array('id' => $order->getCustomerId())) ?>">
                     <?php echo Utils::escape($order->getCustomerName()) ?></a>
                 </td>
@@ -75,7 +106,7 @@
                     <?php 
                     $it = $order->getItem();
                     if ( $it ) {
-                        echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                        echo Utils::escape($it->getCode() . ' - ' . $it->getName()
                                 . ' - ' . $it->getSize() . ' ' . $it->getUnit() ); 
                     }?>
                 </td>
@@ -92,7 +123,12 @@
                     <?php echo Utils::escape(Utils::formatDate($order->getEndDate())) ?>
                 </td>
                 <td>
-                    <?php echo Utils::escape($order->getFrequency()) ?>
+                    <?php 
+                    if ( $order->getFrequency() == 'N-WEEKLY' ) {
+                        echo 'N-WEEKLY (' . $order->getNWeekly() . ')'; 
+                    } else { 
+                        echo Utils::escape($order->getFrequency()); } 
+                    ?>
                 </td>
                 <td>
                     <?php 

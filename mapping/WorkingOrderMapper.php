@@ -15,9 +15,9 @@ final class WorkingOrderMapper {
      * Expected properties are:
      * <ul>
      *   <li>id</li>
-     *   <li>customer_id</li>
      *   <li>pickup_location_id</li>
      *   <li>delivery_date</li>
+     *   <li>delivery_time</li>
      *   <li>modified_date</li>
      *   <li>user_id</li>
      *   <li>quantity</li>
@@ -45,6 +45,15 @@ final class WorkingOrderMapper {
             $deliveryDate = self::createDateTime($properties['delivery_date']);
             if ($deliveryDate) {
                 $order->setDeliveryDate($deliveryDate);
+            }
+        }
+        if (array_key_exists('delivery_time', $properties)) {
+            $deliveryTime = DateTime::createFromFormat('H:i:s', $properties['delivery_time']);
+            if ( !$deliveryTime ) {
+               $deliveryTime = DateTime::createFromFormat('H:i', $properties['delivery_time']); 
+            }
+            if ($deliveryTime) {
+                $order->setDeliveryTime($deliveryTime);
             }
         }
         if (array_key_exists('modified_date', $properties)) {

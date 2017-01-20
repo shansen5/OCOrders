@@ -1,11 +1,11 @@
 <?php
 
 /**
- * DAO for {@link Item}.
+ * DAO for {@link Account}.
  * <p>
  * It is also a service, ideally, this class should be divided into DAO and Service.
  */
-final class ItemDao {
+final class AccountDao {
 
     /** @var PDO */
     private $db = null;
@@ -17,64 +17,64 @@ final class ItemDao {
     }
 
     /**
-     * Find all {@link Item}s by search criteria.
-     * @return array array of {@link Item}s
+     * Find all {@link Account}s by search criteria.
+     * @return array array of {@link Account}s
      */
-    public function find(ItemSearchCriteria $search = null) {
+    public function find(AccountSearchCriteria $search = null) {
         $result = array();
         foreach ($this->query($this->getFindSql($search)) as $row) {
-            $item = new Item();
-            ItemMapper::map($item, $row);
-            $result[$item->getId()] = $item;
+            $account = new Account();
+            AccountMapper::map($account, $row);
+            $result[$account->getId()] = $account;
         }
         return $result;
     }
 
     /**
-     * Find {@link Item} by identifier.
-     * @return Item or <i>null</i> if not found
+     * Find {@link Account} by identifier.
+     * @return Account or <i>null</i> if not found
      */
     public function findById($id) {
-        $row = $this->query('SELECT * FROM items WHERE id = ' . (int) $id)->fetch();
+        $row = $this->query('SELECT * FROM accounts WHERE id = ' . (int) $id)->fetch();
         if (!$row) {
             return null;
         }
-        $item = new Item();
-        ItemMapper::map($item, $row);
-        return $item;
+        $account = new Account();
+        AccountMapper::map($account, $row);
+        return $account;
     }
 
     /**
-     * @return array of item id, type, name
+     * @return array of account id, name
      */
-    public function getAllItemIdAndType() {
-        $statement = $this->getDb()->prepare('SELECT id, code, name
-                        FROM items ORDER BY code, name');
+    public function getAllAccountIdAndName() {
+        $statement = $this->getDb()->prepare('SELECT id, name
+                        FROM accounts ORDER BY name');
         $statement->execute();
         $result = $statement->fetchAll();
         return $result;
     }
 
     /**
-     * Save {@link Item}.
-     * @param Item $item {@link Item} to be saved
-     * @return Item saved {@link Item} instance
+     * Save {@link Account}.
+     * @param Account $account {@link Account} to be saved
+     * @return Account saved {@link Account} instance
      */
-    public function save(Item $item) {
-        if ($item->getId() === null) {
-            return $this->insert($item);
+    public function save(Account $account) {
+        if ($account->getId() === null) {
+            return $this->insert($account);
         }
-        return $this->update($item);
+        return $this->update($account);
     }
 
     /**
-     * Delete {@link Item} by identifier.
-     * @param int $id {@link Item} identifier
+     * Delete {@link Account} by identifier.
+     * @param int $id {@link Account} identifier
      * @return bool <i>true</i> on success, <i>false</i> otherwise
      */
     public function delete($id) {
         $sql = '
-            DELETE FROM items 
+            DELETE FROM accounts 
             WHERE
                 id = :id';
         $statement = $this->getDb()->prepare($sql);
@@ -101,9 +101,9 @@ final class ItemDao {
         return $this->db;
     }
 
-    private function getFindSql(ItemSearchCriteria $search = null) {
-        $sql = 'SELECT * FROM items ';
-        $orderBy = ' code, name';
+    private function getFindSql(AccountSearchCriteria $search = null) {
+        $sql = 'SELECT * FROM accounts ';
+        $orderBy = ' name';
         $sql .= ' ORDER BY ' . $orderBy;
         return $sql;
     }
@@ -112,53 +112,49 @@ final class ItemDao {
      * @return Todo
      * @throws Exception
      */
-    private function insert(Item $item) {
-        $item->setId( null );
+    private function insert(Account $account) {
+        $account->setId( null );
         $sql = '
-            INSERT INTO items (id, code, name, size,  unit)
-                VALUES (:id, :code, :name, :size, :unit)';
-        return $this->execute($sql, $item);
+            INSERT INTO accounts (id, name, default_customer_id)
+                VALUES (:id, :name, :default_customer_id )';
+        return $this->execute($sql, $account);
     }
 
     /**
      * @return Todo
      * @throws Exception
      */
-    private function update(Item $item) {
+    private function update(Account $account) {
         $sql = '
-            UPDATE items SET
-                code = :code,
+            UPDATE accounts SET
                 name = :name,
-                size = :size,
-                unit = :unit
+                default_customer_id = :default_customer_id
             WHERE
                 id = :id';
-        return $this->execute($sql, $item);
+        return $this->execute($sql, $account);
     }
 
     /**
-     * @return Item
+     * @return Account
      * @throws Exception
      */
-    private function execute($sql, Item $item) {
+    private function execute($sql, Account $account) {
         $statement = $this->getDb()->prepare($sql);
-        $this->executeStatement($statement, $this->getParams($item));
-        if (!$item->getId()) {
+        $this->executeStatement($statement, $this->getParams($account));
+        if (!$account->getId()) {
             return $this->findById($this->getDb()->lastInsertId());
         }
         if (!$statement->rowCount()) {
-            throw new NotFoundException('Item with ID "' . $item->getId() . '" does not exist.');
+            throw new NotFoundException('Account with ID "' . $account->getId() . '" does not exist.');
         }
-        return $item;
+        return $account;
     }
 
-    private function getParams(Item $item) {
+    private function getParams(Account $account) {
         $params = array(
-            ':id' => $item->getId(),
-            ':code' => $item->getCode(),
-            ':name' => $item->getName(),
-            ':size' => $item->getSize(),
-            ':unit' => $item->getUnit()
+            ':id' => $account->getId(),
+            ':name' => $account->getName(),
+            ':default_customer_id' => $account->getDefaultCustomerId()
         );
         return $params;
     }
@@ -184,10 +180,6 @@ final class ItemDao {
     private static function throwDbError(array $errorInfo) {
         // TODO log error, send email, etc.
         throw new Exception('DB error [' . $errorInfo[0] . ', ' . $errorInfo[1] . ']: ' . $errorInfo[2]);
-    }
-
-    private static function formatDateTime(DateTime $date) {
-        return $date->format(DateTime::ISO8601);
     }
 
 }

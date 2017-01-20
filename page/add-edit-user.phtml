@@ -49,6 +49,23 @@ function error_field($title, array $errors) {
             <input type="password" name="user[password]" value="<?php echo Utils::escape($user->getPassword()); ?>"
                    class="text<?php echo error_field('password', $errors); ?>"/>
         </div>
+        <div  class="field">
+            <label>Role:</label>
+            <select name="user[role]">
+            <?php foreach (Utils::getAllUserRoles() as $role): ?>
+                <option value="<?php echo $role; ?>"
+                        <?php if ($role == $user->getRole()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $role; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="field">
+            <label>Role:</label>
+            <input type="text" name="user[role]" value="<?php echo Utils::escape($user->getRole()); ?>"
+                   class="text<?php echo error_field('role', $errors); ?>"/>
+        </div>
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
             <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />

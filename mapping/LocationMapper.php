@@ -23,6 +23,7 @@ final class LocationMapper {
      *   <li>state</li>
      *   <li>postal_code</li>
      *   <li>country</li>
+     *   <li>zone</li>
      * </ul>
      * @param Location $location
      * @param array $properties
@@ -54,6 +55,9 @@ final class LocationMapper {
         }
         if (array_key_exists('country', $properties)) {
             $location->setCountry($properties['country']);
+        }
+        if (array_key_exists('zone', $properties)) {
+            $location->setZone($properties['zone']);
         }
     }
 

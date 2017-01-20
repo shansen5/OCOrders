@@ -33,6 +33,9 @@ final class OrderMapper {
         if (array_key_exists('id', $properties)) {
             $order->setId($properties['id']);
         }
+        if (array_key_exists('account_id', $properties)) {
+            $order->setAccountId($properties['account_id']);
+        }
         if (array_key_exists('customer_id', $properties)) {
             $order->setCustomerId($properties['customer_id']);
         }
@@ -42,13 +45,13 @@ final class OrderMapper {
         if (array_key_exists('pickup_location_id', $properties)) {
             $order->setLocationId($properties['pickup_location_id']);
         }
-        if (array_key_exists('pickup_time', $properties)) {
-            $pickupTime = DateTime::createFromFormat('H:i:s', $properties['pickup_time']);
-            if ( !$pickupTime ) {
-               $pickupTime = DateTime::createFromFormat('H:i', $properties['pickup_time']); 
+        if (array_key_exists('delivery_time', $properties)) {
+            $deliveryTime = DateTime::createFromFormat('H:i:s', $properties['delivery_time']);
+            if ( !$deliveryTime ) {
+               $deliveryTime = DateTime::createFromFormat('H:i', $properties['delivery_time']); 
             }
-            if ($pickupTime) {
-                $order->setPickupTime($pickupTime);
+            if ($deliveryTime) {
+                $order->setDeliveryTime($deliveryTime);
             }
         }
         if (array_key_exists('start_date', $properties)) {

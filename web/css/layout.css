@@ -17,11 +17,11 @@
 }
 
 #page #content .col-1 {
-    width: 250px;
+    width: 150px;
     margin-right: 20px;
 }
 #page #content .col-2 {
-    width: 650px;
+    width: 900px;
     min-height: 500px;
 }
 

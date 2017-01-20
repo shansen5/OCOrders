@@ -15,11 +15,13 @@ if (array_key_exists('cancel', $_POST)) {
     Utils::redirect('detail', array('id' => $order->getId()));
 } elseif (array_key_exists('save', $_POST)) {
     $data = array(
+        'account_id' => $_POST['order']['account_id'],
         'customer_id' => $_POST['order']['customer_id'],
         'order_id' => $_POST['order']['order_id'],
         'item_id' => $_POST['order']['item_id'],
         'pickup_location_id' => $_POST['order']['pickup_location_id'],
         'delivery_date' => $_POST['order']['delivery_date'],
+        'delivery_time' => $_POST['order']['delivery_time'],
         'quantity' => $_POST['order']['quantity'],
         );
         ;

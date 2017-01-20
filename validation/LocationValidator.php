@@ -22,4 +22,15 @@ final class LocationValidator {
         return $errors;
     }
 
+        /**
+     * Validate the given zone.
+     * @param string $zone to be validated
+     * @throws Exception if the zone is not known
+     */
+    public static function validateZone($zone) {
+        if (!in_array($zone, Location::allZones())) {
+            throw new Exception('Unknown zone: ' . $zone);
+        }
+    }
+
 }

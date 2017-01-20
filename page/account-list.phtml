@@ -1,0 +1,63 @@
+<?php
+
+
+//~ Template for account-list.php
+// variables:
+//  $title - page title
+//  $accounts - Accounts to be displayed
+
+?>
+
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-edit-account'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Account" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<?php if (empty($accounts)): ?>
+    <p>No accounts found.</p>
+<?php else: ?>
+    <table class="detail">
+        <tr>
+            <th>ID</th> 
+            <th>Name</th>
+            <th>Default Customer</th>
+        </tr>
+        </th>
+        <?php foreach ($accounts as $account): ?>
+            <?php /* @var $account Account */ ?>
+            <tr>
+                <td>
+                    <?php echo Utils::escape($account->getId()); ?>
+                </td>
+                <td>
+                    <a href="<?php echo Utils::createLink('account-detail', array('id' => $account->getId())) ?>">
+                    <?php echo Utils::escape($account->getName()); ?>
+                    </a>
+                </td>
+                <td>
+                    <?php if ( $account->getDefaultCustomerId() > 0 ): ?>
+                        <a href="<?php echo Utils::createLink('customer-detail', array('id' => $account->getDefaultCustomerId())) ?>">
+                        <?php 
+                            $dao = new CustomerDao();
+                            $customer = $dao->findById($account->getDefaultCustomerId());
+                            if ( $customer ) {
+                                echo $customer->getLastName() . ', ' . $customer->getFirstName();
+                            } ?>
+                        </a>
+                    <?php else: ?>
+                        ---
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>
+

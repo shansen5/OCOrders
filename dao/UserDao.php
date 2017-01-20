@@ -9,6 +9,9 @@ final class UserDao {
 
     const USER_INSERT = 1;
     
+    const ADMIN_ROLE = 'ADMIN';
+    const USER_ROLE = 'USER';
+    
     /** @var PDO */
     private $db = null;
 
@@ -63,6 +66,9 @@ final class UserDao {
         return $user;
     }
 
+    public function getAllUserRoles() {
+        return array( self::ADMIN_ROLE, self::USER_ROLE );
+    }
     /**
      * Save {@link User}.
      * @param User $user {@link User} to be saved

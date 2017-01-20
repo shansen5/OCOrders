@@ -37,7 +37,7 @@ final class WorkingOrderDao {
      */
     public function findById($id) {
         $row = $this->query('SELECT id, order_id, item_id,
-                        delivery_date, modified_date, pickup_location_id,
+                        delivery_date, delivery_time, modified_date, pickup_location_id,
                         user_id, quantity
                         FROM working_orders 
                         WHERE id = ' . (int) $id)->fetch();
@@ -263,8 +263,9 @@ private function saveMonthlyOrders( Order $order ) {
 
     private function getFindSql(WorkingOrderSearchCriteria $search = null) {
         $sql = 'SELECT w.id, w.order_id, w.item_id, w.user_id,
-                        w.delivery_date, w.modified_date, 
-                        w.pickup_location_id, w.quantity, o.customer_id
+                        w.delivery_date, w.delivery_time, w.modified_date, 
+                        w.pickup_location_id, w.quantity, 
+                        o.account_id, o.customer_id
                         FROM working_orders w, orders o 
                         WHERE w.order_id = o.id ';
         if ( $search && $search->hasFilter() ) {
@@ -282,6 +283,9 @@ private function saveMonthlyOrders( Order $order ) {
                     // All rows with delivery_date less than the end_date.
                     $sql .= ' AND w.delivery_date <= "' . $search->getEndDate() . '" ';
                 }
+            }
+            if ( $search->getAccountId() ) {
+                $sql .= ' AND o.account_id = ' . $search->getAccountId();
             }
             if ( $search->getCustomerId() ) {
                 $sql .= ' AND o.customer_id = ' . $search->getCustomerId();
@@ -305,9 +309,9 @@ private function saveMonthlyOrders( Order $order ) {
     private function insert( $working_order) {
         $working_order->setId( null );
         $sql = 'INSERT INTO working_orders (id, order_id, item_id, pickup_location_id, user_id, 
-                    delivery_date, modified_date, quantity)
+                    delivery_date, delivery_time, modified_date, quantity)
                 VALUES (:id, :order_id, :item_id, :pickup_location_id, :user_id,
-                        :delivery_date, :modified_date, :quantity)';
+                        :delivery_date, :delivery_time, :modified_date, :quantity)';
         $result = $this->execute($sql, $working_order, self::ORDER_INSERT);
        
         return $result;
@@ -324,6 +328,7 @@ private function saveMonthlyOrders( Order $order ) {
                 pickup_location_id = :pickup_location_id,
                 user_id = :user_id,
                 delivery_date = :delivery_date,
+                delivery_time = :delivery_time,
                 modified_date = :modified_date,
                 quantity = :quantity
             WHERE
@@ -355,6 +360,7 @@ private function saveMonthlyOrders( Order $order ) {
             ':item_id' => $order->getItemId(),
             ':pickup_location_id' => $order->getLocationId(),
             ':delivery_date' => self::formatDateTime($order->getDeliveryDate()),
+            ':delivery_time' => $order->getDeliveryTime()->format( 'H:i' ),
             ':modified_date' => self::formatDateTime(new DateTime()),
             ':quantity' => $order->getQuantity(),
             ':user_id' => Utils::getUserIdByName( $_SESSION['oc_user'] ),

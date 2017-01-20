@@ -8,14 +8,25 @@
 
 ?>
 
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-edit-item'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Item" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
 <?php if (empty($items)): ?>
     <p>No items found.</p>
 <?php else: ?>
     <table class="detail">
         <tr>
-            <th>ID</th> 
-            <th>Type</th>
-            <th>Subtype</th>
+            <th>Code+Name</th>
             <th>Size</th>
             <th>Unit</th>
         </tr>
@@ -25,7 +36,7 @@
             <tr>
                 <td>
                     <a href="<?php echo Utils::createLink('item-detail', array('id' => $item->getId())) ?>">
-                    <?php echo Utils::escape($item->getType()); ?> -- <?php echo Utils::escape($item->getSubType()); ?>
+                    <?php echo Utils::escape($item->getCode()); ?> -- <?php echo Utils::escape($item->getName()); ?>
                     </a>
                 </td>
                 <td>

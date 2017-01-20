@@ -39,6 +39,10 @@
                 <th>Country</th>
                 <td><?php echo Utils::escape($location->getCountry()); ?></td>
             </tr>
+            <tr>
+                <th>Delivery Zone</th>
+                <td><?php echo Utils::escape($location->getZone()); ?></td>
+            </tr>
             <div class="actions">
                 <a href="<?php echo Utils::createLink('add-location', array('id' => $location->getId())); ?>"><img src="img/action/edit.png" alt="" title="Edit it." class="icon" /></a>
                 <a href="<?php echo Utils::createLink('location-delete', array('id' => $location->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>

@@ -12,6 +12,16 @@
     <tr>
         <td>
             <tr>
+                <th>Account</th>
+                <td>
+                        <a href="<?php 
+                            echo Utils::createLink('account-detail', array('id' => $order->getCustomerId())); 
+                    ?>"><?php 
+                        echo Utils::escape($order->getAccountName()); 
+                        ?></a>
+                    </td>
+            </tr>
+            <tr>
                 <th>Customer</th>
                 <td>
                         <a href="<?php 
@@ -26,8 +36,8 @@
                 <td><?php 
                     $it = $order->getItem();
                     if ( $it ) {
-                        echo Utils::escape($it->getType() . ' - ' 
-                                . $it->getSubtype() . ' - ' . $it->getSize() 
+                        echo Utils::escape($it->getCode() . ' - ' 
+                                . $it->getName() . ' - ' . $it->getSize() 
                                 . ' ' . $it->getUnit()) ; 
                     }
                     ?></td>
@@ -85,8 +95,8 @@
                 <td><?php echo Utils::escape($order->getLocationName()); ?></td>
             </tr>
             <tr>
-                <th>Pickup Time</th>
-                <td><?php echo $order->getPickupTime()->format( 'H:i' ); ?></td>
+                <th>Delivery Time</th>
+                <td><?php echo $order->getDeliveryTime()->format( 'H:i' ); ?></td>
             </tr>
             <tr>
                 <th>Order Date</th>

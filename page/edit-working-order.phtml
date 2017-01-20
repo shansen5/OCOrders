@@ -42,16 +42,14 @@ function error_field($title, array $errors) {
 <form action="#" method="post">
     <fieldset>
         <div  class="field">
+            <label>Account:</label>
+            <input type="text" value="
+                   <?php echo $order->getAccountName(); ?>" disabled />
+        </div>
+        <div  class="field">
             <label>Customer:</label>
-            <select name="order[customer_id]">
-            <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
-                <option value="<?php echo $cust[id]; ?>"
-                        <?php if ($cust[id] == $order->getCustomerId()): ?>
-                            selected="selected"
-                        <?php endif; ?> disabled
-                        ><?php echo $cust[last_name] . ", " . $cust[first_name]; ?></option>
-            <?php endforeach; ?>
-            </select>
+            <input type="text" value="
+                   <?php echo $order->getCustomerName(); ?>" disabled />
         </div>
         <div  class="field">
             <label>Item:</label>
@@ -61,7 +59,7 @@ function error_field($title, array $errors) {
                         <?php if ($it->getId() == $order->getItemId()): ?>
                             selected="selected"
                         <?php endif; ?>
-                        ><?php echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                        ><?php echo Utils::escape($it->getCode() . ' - ' . $it->getName()
                                 . ' - ' . $it->getSize() . ' ' . $it->getUnit() ); ?></option>
             <?php endforeach; ?>
             </select>
@@ -90,6 +88,12 @@ function error_field($title, array $errors) {
             <input type="text" name="order[delivery_date]" 
                 <?php if ($edit) { echo 'value="' . Utils::formatDate($order->getDeliveryDate()); } ?>"
                    class="text datepicker<?php echo error_field('delivery_date', $errors); ?>" />
+        </div>
+        <div class="field">
+            <label>Delivery Time:</label>
+            <input type="time" name="order[delivery_time]" 
+                <?php if ($edit) { echo 'value="' . $order->getDeliveryTime()->format( 'H:i' ); } ?>"
+                   class="text<?php echo error_field('delivery_time', $errors); ?>" />
         </div>
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />

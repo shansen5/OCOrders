@@ -31,7 +31,7 @@ final class Utils {
         if ($date === null) {
             return '';
         }
-        return $date->format('Y-m-d');
+        return $date->format('m-d-Y');
     }
 
     /**
@@ -43,7 +43,7 @@ final class Utils {
         if ($date === null) {
             return '';
         }
-        return $date->format('Y-m-d H:i');
+        return $date->format('m-d-Y H:i');
     }
 
     /**
@@ -92,8 +92,30 @@ final class Utils {
     }
 
     /**
+     * Get {@link Account} by the identifier 'id' found in the URL.
+     * @return Account {@link Account} instance
+     * @throws NotFoundException if the param or {@link Account} instance is not found
+     */
+    public static function getAccountByGetId() {
+        $id = null;
+        try {
+            $id = self::getUrlParam('id');
+        } catch (Exception $ex) {
+            throw new NotFoundException('No Account identifier provided.');
+        }
+        if (!is_numeric($id)) {
+            throw new NotFoundException('Invalid Account identifier provided.');
+        }
+        $dao = new AccountDao();
+        $account = $dao->findById($id);
+        if ($account === null) {
+            throw new NotFoundException('Unknown Account identifier provided.');
+        }
+        return $account;
+    }
+    /**
      * Get {@link Location} by the identifier 'id' found in the URL.
-     * @return Item {@link Location} instance
+     * @return Location {@link Location} instance
      * @throws NotFoundException if the param or {@link Location} instance is not found
      */
     public static function getLocationByGetId() {
@@ -172,7 +194,7 @@ final class Utils {
         if (!is_numeric($id)) {
             throw new NotFoundException('Invalid User identifier provided.');
         }
-        return getUserById( $id );
+        return Utils::getUserById( $id );
     }
 
     public static function getUserById( $id ) {
@@ -231,6 +253,14 @@ final class Utils {
     }
 
     /**
+     * @return array of id, name for all accounts
+     */
+    public static function getAllAccountIdAndName() {
+        $dao = new AccountDao();
+        return $dao->getAllAccountIdAndName();
+    }
+    
+    /**
      * @return array of id, first_name, last_name for all customers
      */
     public static function getAllCustomerIdAndName() {
@@ -243,6 +273,15 @@ final class Utils {
      */
     public static function getAllItems() {
         $dao = new ItemDao();
+        $result = $dao->find();
+        return $result;
+    }
+    
+    /**
+     * @return array of id, type, sub_type for all items
+     */
+    public static function getAllAccounts() {
+        $dao = new AccountDao();
         $result = $dao->find();
         return $result;
     }

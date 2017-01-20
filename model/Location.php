@@ -5,6 +5,10 @@
  */
 final class Location {
 
+    const SOUTH_ZONE = 'South';
+    const HOME_ZONE = 'Home';
+    const NORTH_ZONE = 'North';
+    
     /** @var int */
     private $id;
     /** @var int */
@@ -23,8 +27,18 @@ final class Location {
     private $postal_code;
     /** @var string */
     private $country;
+    /** @var string */
+    private $zone;
 
+    public static function allZones() {
+        return array(
+            self::NORTH_ZONE,
+            self::HOME_ZONE,
+            self::SOUTH_ZONE,
+        );
+    }
 
+    
     /**
      * Create new {@link Location} with default properties set.
      */
@@ -141,5 +155,16 @@ final class Location {
         $this->postal_code = $postal_code;
     }
 
+    /**
+     * @return string
+     */
+    public function getZone() {
+        return $this->zone;
+    }
+
+    public function setZone($zone) {
+        LocationValidator::validateZone($zone);
+        $this->zone = $zone;
+    }
 
 }

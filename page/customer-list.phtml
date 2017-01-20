@@ -8,6 +8,19 @@
 
 ?>
 
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-customer'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Customer" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
 <?php if (empty($customers)): ?>
     <p>No customers found.</p>
 <?php else: ?>

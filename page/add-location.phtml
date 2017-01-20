@@ -76,6 +76,18 @@ function error_field($title, array $errors) {
             <input type="text" name="location[postal_code]" value="<?php echo Utils::escape($location->getPostalCode()); ?>"
                    class="text<?php echo error_field('postal_code', $errors); ?>"/>
         </div>
+        <div  class="field">
+            <label>Delivery Zone:</label>
+            <select name="location[zone]">
+            <?php foreach (Location::allZones() as $zone): ?>
+                <option value="<?php echo $zone; ?>"
+                        <?php if ($zone == $location->getZone()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $zone; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
             <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
