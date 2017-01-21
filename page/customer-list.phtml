@@ -28,7 +28,7 @@
         <?php foreach ($customers as $customer): ?>
             <?php /* @var $customer Item */ ?>
             <li>
-                <h3><a href="<?php echo Utils::createLink('customer-detail', array('id' => $customer->getId())) ?>">
+                <h3><a href="<?php echo Utils::createLink('add-customer', array('id' => $customer->getId())) ?>">
                     <?php echo Utils::escape($customer->getFirstName()) . ' ' . Utils::escape($customer->getLastName()); ?>
                     </a></h3>
             </li>

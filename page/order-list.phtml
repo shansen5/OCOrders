@@ -91,15 +91,15 @@
             <?php /* @var $order Item */ ?>
             <tr>
                 <td>
-                    <a href="<?php echo Utils::createLink('order-detail', array('id' => $order->getId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId())) ?>">
                         <?php echo $order->getId() ?></a>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('account-detail', array('id' => $order->getAccountId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-edit-account', array('id' => $order->getAccountId())) ?>">
                     <?php echo Utils::escape($order->getAccountName()) ?></a>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('customer-detail', array('id' => $order->getCustomerId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-customer', array('id' => $order->getCustomerId())) ?>">
                     <?php echo Utils::escape($order->getCustomerName()) ?></a>
                 </td>
                 <td>

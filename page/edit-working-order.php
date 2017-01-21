@@ -12,7 +12,7 @@ if ($edit) {
 
 if (array_key_exists('cancel', $_POST)) {
     // redirect
-    Utils::redirect('detail', array('id' => $order->getId()));
+    Utils::redirect('working-order-list', array('id' => $order->getId()));
 } elseif (array_key_exists('save', $_POST)) {
     $data = array(
         'account_id' => $_POST['order']['account_id'],

@@ -38,13 +38,13 @@
                     <?php echo Utils::escape($account->getId()); ?>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('account-detail', array('id' => $account->getId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-edit-account', array('id' => $account->getId())) ?>">
                     <?php echo Utils::escape($account->getName()); ?>
                     </a>
                 </td>
                 <td>
                     <?php if ( $account->getDefaultCustomerId() > 0 ): ?>
-                        <a href="<?php echo Utils::createLink('customer-detail', array('id' => $account->getDefaultCustomerId())) ?>">
+                        <a href="<?php echo Utils::createLink('add-customer', array('id' => $account->getDefaultCustomerId())) ?>">
                         <?php 
                             $dao = new CustomerDao();
                             $customer = $dao->findById($account->getDefaultCustomerId());

@@ -28,7 +28,7 @@
         <?php foreach ($locations as $location): ?>
             <?php /* @var $location Item */ ?>
             <li>
-                <h3><a href="<?php echo Utils::createLink('location-detail', array('id' => $location->getId())) ?>">
+                <h3><a href="<?php echo Utils::createLink('add-location', array('id' => $location->getId())) ?>">
                     <?php echo Utils::escape($location->getName()); ?>
                     </a></h3>
             </li>

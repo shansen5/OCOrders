@@ -52,19 +52,13 @@ function error_field($title, array $errors) {
         <div  class="field">
             <label>Role:</label>
             <select name="user[role]">
-            <?php foreach (Utils::getAllUserRoles() as $role): ?>
-                <option value="<?php echo $role; ?>"
-                        <?php if ($role == $user->getRole()): ?>
-                            selected="selected"
-                        <?php endif; ?>
-                        ><?php echo $role; ?></option>
-            <?php endforeach; ?>
+                <option value="USER" <?php if ("USER" == $user->getRole()): ?>
+                            selected="selected" <?php endif; ?>
+                            >USER</option>
+                <option value="ADMIN" <?php if ("ADMIN" == $user->getRole()): ?>
+                            selected="selected" <?php endif; ?>
+                            >ADMIN</option>
             </select>
-        </div>
-        <div class="field">
-            <label>Role:</label>
-            <input type="text" name="user[role]" value="<?php echo Utils::escape($user->getRole()); ?>"
-                   class="text<?php echo error_field('role', $errors); ?>"/>
         </div>
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
@@ -72,3 +66,14 @@ function error_field($title, array $errors) {
         </div>
     </fieldset>
 </form>
+<p>
+    <?php 
+    $backLink = Utils::createLink('user-list', array()); 
+    ?>
+    <a href="<?php 
+    echo $backLink; 
+    ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
+    <a href="<?php 
+    echo $backLink; 
+    ?>">To the list</a>
+</p>

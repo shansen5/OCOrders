@@ -101,3 +101,9 @@ function error_field($title, array $errors) {
         </div>
     </fieldset>
 </form>
+<p>
+    <?php $backLink = Utils::createLink('working-order-list', array()); ?>
+    <a href="<?php echo $backLink; ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
+    <a href="<?php echo $backLink; ?>">To the list</a>
+</p>
+

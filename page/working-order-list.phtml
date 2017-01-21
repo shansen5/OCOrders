@@ -143,7 +143,7 @@ function error_field($title, array $errors) {
             <?php /* @var $working_order WorkingOrder */ ?>
             <tr>
                 <td>
-                    <a href="<?php echo Utils::createLink('working-order-detail', array('id' => $working_order->getId())) ?>">
+                    <a href="<?php echo Utils::createLink('edit-working-order', array('id' => $working_order->getId())) ?>">
                         <?php echo $working_order->getId() ?></a>
                 </td>
                 <td>
@@ -151,11 +151,11 @@ function error_field($title, array $errors) {
                             . $working_order->getDeliveryTime()->format('H:i') ?>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('account-detail', array('id' => $working_order->getAccountId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-edit-account', array('id' => $working_order->getAccountId())) ?>">
                     <?php echo Utils::escape($working_order->getAccountName()) ?></a>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('customer-detail', array('id' => $working_order->getCustomerId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-customer', array('id' => $working_order->getCustomerId())) ?>">
                     <?php echo Utils::escape($working_order->getCustomerName()) ?></a>
                 </td>
                 <td>
@@ -173,7 +173,7 @@ function error_field($title, array $errors) {
                     <?php echo Utils::escape($working_order->getLocationName()) ?>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('order-detail', array('id' => $working_order->getOrderId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-order', array('id' => $working_order->getOrderId())) ?>">
                         <?php echo $working_order->getOrderId() ?></a>
                 </td>
             </tr>

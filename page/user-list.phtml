@@ -15,7 +15,7 @@
         <?php foreach ($users as $user): ?>
             <?php /* @var $user Item */ ?>
             <li>
-                <a href="<?php echo Utils::createLink('user-detail', array('id' => $user->getId())) ?>">
+                <a href="<?php echo Utils::createLink('add-edit-user', array('id' => $user->getId())) ?>">
                     <?php echo Utils::escape($user->getUsername()); ?>--<?php echo Utils::escape($user->getRole()); ?>
                     </a>
             </li>
