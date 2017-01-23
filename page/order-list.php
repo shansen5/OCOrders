@@ -24,7 +24,7 @@ function download_orders( $orders ) {
     if ( $handle ) {
         fwrite( $handle, "Account, Customer, Code, Name, Size, Unit," . 
                 " Start Date, End Date, Frequency, Day of Week, Skip Days, Pickup Time," . 
-                " Location, Quantity, \n" );
+                " Location, Zone, Quantity, \n" );
         foreach ($orders as $order) {
             $days_skipped = '';
             $multi = false;
@@ -39,8 +39,9 @@ function download_orders( $orders ) {
             }
             $it = $order->getItem();
             if ( $it ) {
-                fwrite( $handle, $order->getAccountName(). ', ' 
-                    . $order->getAccount()->getDefaultCustomerId() == 0 ? '---' : $order->getCustomerName(). ', ' . $it->getCode() . ', ' . $it->getName() . ', '
+                $customer_name = $order->getAccount()->getDefaultCustomerId() == 0 ? $order->getCustomerName() : '---';
+                $line = $order->getAccountName(). ', ' 
+                    . '"' . $customer_name . '", ' .  $it->getCode() . ', ' . $it->getName() . ', '
                     . $it->getSize() . ', ' . $it->getUnit() . ', '
                     . Utils::formatDate( $order->getStartDate() ) . ', '
                     . Utils::formatDate( $order->getEndDate() ) . ', '
@@ -49,7 +50,9 @@ function download_orders( $orders ) {
                     . $days_skipped . ', '
                     . $order->getDeliveryTime()->format( 'H:i' ) . ', '
                     . $order->getLocationName() . ', '
-                    . $order->getQuantity()  . "\n" );
+                    . $order->getDeliveryZone() . ', '
+                    . $order->getQuantity()  . "\n";
+                fwrite( $handle, $line  );
             } 
         }
         fclose( $handle );

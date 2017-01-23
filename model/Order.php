@@ -342,6 +342,21 @@ final class Order {
         }
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryZone() {
+        /*
+         * If $customer is null, call getLocation().
+         * LocationDao.
+         */
+        if ( $this->getLocation() != null ) {
+            return $this->getLocation()->getZone();
+        }
+        return null;
+    }
+
     /**
      * @return int 
      */

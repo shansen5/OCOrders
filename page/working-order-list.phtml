@@ -135,8 +135,9 @@ function error_field($title, array $errors) {
             <th>Account</th>
             <th>Customer</th>
             <th>Item</th>
-            <th>Quantity</th>
+            <th>Qty</th>
             <th>Pickup</th>
+            <th>Zone</th>
             <th>OrderId</th>
         </tr>
         <?php foreach ($working_orders as $working_order): ?>
@@ -171,6 +172,9 @@ function error_field($title, array $errors) {
                 </td>
                 <td>
                     <?php echo Utils::escape($working_order->getLocationName()) ?>
+                </td>
+                <td>
+                    <?php echo Utils::escape($working_order->getLocationZone()) ?>
                 </td>
                 <td>
                     <a href="<?php echo Utils::createLink('add-order', array('id' => $working_order->getOrderId())) ?>">

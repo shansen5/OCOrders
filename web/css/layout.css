@@ -21,10 +21,11 @@
     margin-right: 10px;
 }
 #page #content .col-2 {
-    width: 900px;
+    width: 800px;
     min-height: 500px;
 }
 
 #footer {
-    height: 89px;
+    margin-left: 200px;
+    height: 75px;
 }

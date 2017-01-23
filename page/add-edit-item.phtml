@@ -41,13 +41,13 @@ function error_field($title, array $errors) {
     <fieldset>
         <div class="field">
             <label>Code:</label>
-            <input type="text" name="item[type]" value="<?php echo Utils::escape($item->getCode()); ?>"
-                   class="text<?php echo error_field('type', $errors); ?>"/>
+            <input type="text" name="item[code]" value="<?php echo Utils::escape($item->getCode()); ?>"
+                   class="text<?php echo error_field('code', $errors); ?>"/>
         </div>
         <div class="field">
             <label>Name:</label>
-            <input type="text" name="item[sub_type]" value="<?php echo Utils::escape($item->getName()); ?>"
-                   class="text<?php echo error_field('sub_type', $errors); ?>"/>
+            <input type="text" name="item[name]" value="<?php echo Utils::escape($item->getName()); ?>"
+                   class="text<?php echo error_field('name', $errors); ?>"/>
         </div>
         <div class="field">
             <label>Size:</label>

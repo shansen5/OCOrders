@@ -17,7 +17,7 @@ final class ItemValidator {
     public static function validate(Item $item) {
         $errors = array();
         if (!trim($item->getCode())) {
-            $errors[] = new Error('type', 'Type cannot be empty.');
+            $errors[] = new Error('code', 'Code cannot be empty.');
         }
         if ( !$item->getSize() ) {
             $errors[] = new Error('size', 'Size cannot be empty.');
