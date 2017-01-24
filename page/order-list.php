@@ -40,8 +40,9 @@ function download_orders( $orders ) {
             $it = $order->getItem();
             if ( $it ) {
                 $customer_name = $order->getAccount()->getDefaultCustomerId() == 0 ? $order->getCustomerName() : '---';
-                $line = $order->getAccountName(). ', ' 
-                    . '"' . $customer_name . '", ' .  $it->getCode() . ', ' . $it->getName() . ', '
+                $line = Utils::quoteString( $order->getAccountName()). ', ' 
+                    . Utils::quoteString( $customer_name ) . ', ' .  $it->getCode() . ', ' 
+                    . Utils::quoteString( $it->getName()) . ', '
                     . $it->getSize() . ', ' . $it->getUnit() . ', '
                     . Utils::formatDate( $order->getStartDate() ) . ', '
                     . Utils::formatDate( $order->getEndDate() ) . ', '

@@ -124,7 +124,7 @@ function report_item( $handle, $key, $sum ) {
 }    
 
 function make_item_key( Item $it ) {
-    return $it->getCode() . ', ' . $it->getName() . ', '
+    return $it->getCode() . ', ' . Utils::quoteString( $it->getName()) . ', '
         . $it->getSize() . ', ' . $it->getUnit();
 }
 
@@ -137,24 +137,25 @@ function download_all( $working_orders ) {
         foreach ($working_orders as $working_order) {
             $it = $working_order->getItem();
             if ( $it ) {
-                fwrite( $handle, $it->getCode() . ', ' . $it->getName() . ', '
+                fwrite( $handle, $it->getCode() . ', ' 
+                    . Utils::quoteString( $it->getName()) . ', '
                     . $it->getSize() . ', ' . $it->getUnit() . ', '
                     . Utils::formatDate( $working_order->getDeliveryDate() ) . ', '
                     . $working_order->getDeliveryTime()->format('H:i') . ', '
-                    . $working_order->getLocationName() . ', '
-                    . $working_order->getLocationZone() . ', '
+                    . Utils::quoteString( $working_order->getLocationName()) . ', '
+                    . Utils::quoteString( $working_order->getLocationZone()) . ', '
                     . $working_order->getQuantity() . ', '
-                    . $working_order->getAccountName() . ', "'
-                    . $working_order->getCustomerName() . '"' . "\n" );
+                    . Utils::quoteString( $working_order->getAccountName()) . ', '
+                    . Utils::quoteString( $working_order->getCustomerName()) . "\n" );
             } else {
                 fwrite( $handle, 'null, null, null, null, '
                     . Utils::formatDate( $working_order->getDeliveryDate() ) . ', '
                     . $working_order->getDeliveryTime()->format('H:i') . ', '
-                    . $working_order->getLocationName() . ', '
-                    . $working_order->getLocationZone() . ', '
+                    . Utils::quoteString( $working_order->getLocationName()) . ', '
+                    . Utils::quoteString( $working_order->getLocationZone()) . ', '
                     . $working_order->getQuantity() . ', '
-                    . $working_order->getAccountName() . ', "'
-                    . $working_order->getCustomerName() . '"' . "\n" );
+                    . Utils::quoteString( $working_order->getAccountName() . ', '
+                    . $working_order->getCustomerName()) . "\n" );
             }
         }
         fclose( $handle );

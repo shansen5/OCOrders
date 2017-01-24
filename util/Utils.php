@@ -312,4 +312,7 @@ final class Utils {
         return htmlspecialchars($string, ENT_QUOTES);
     }
 
+    public static function quoteString( $str ) {
+        return '"' . $str . '"';
+    }
 }
