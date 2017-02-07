@@ -20,6 +20,15 @@ function error_field($title, array $errors) {
 /* @var $item Item */
 ?>
 
+<div class="actions">
+    <a href="<?php echo Utils::createLink('add-edit-item', array('id' => $item->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
+    <a href="<?php echo Utils::createLink('item-delete', array('id' => $item->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
+</div>
+<div id="delete-dialog" title="Delete this Item?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Order will be deleted. Are you sure?</p>
+</div>
+
+<br/><br/>
 <h1>
     <?php if ($edit): ?>
         <?php echo Utils::escape($item->getCode() . ' - ' . $item->getName()); ?>

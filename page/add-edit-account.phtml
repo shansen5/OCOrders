@@ -20,6 +20,16 @@ function error_field($title, array $errors) {
 /* @var $account Account */
 ?>
 
+<div class="actions">
+    <a href="<?php echo Utils::createLink('add-edit-account', array('id' => $account->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
+    <a href="<?php echo Utils::createLink('account-delete', array('id' => $account->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
+</div>
+<div id="delete-dialog" title="Delete this Account?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Order will be deleted. Are you sure?</p>
+</div>
+
+<br/><br/>
+
 <h1>
     <?php if ($edit): ?>
         <?php echo Utils::escape($account->getName()); ?>

@@ -4,7 +4,7 @@
 //~ Template for edit-working-order.php
 // variables:
 //  $errors - validation errors
-//  $order - submitted Order
+//  $order - submitted WorkingOrder
 //  $edit - true for EDIT, false for ADD
 
 function error_field($title, array $errors) {
@@ -20,10 +20,18 @@ function error_field($title, array $errors) {
 /* @var $order WorkingOrder */
 ?>
 
+<div class="actions">
+    <a href="<?php echo Utils::createLink('working-order-delete', array('id' => $order->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
+</div>
+<div id="delete-dialog" title="Delete this Working Order?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Order will be deleted. Are you sure?</p>
+</div>
+
+<br/><br/>
 <h1>
     <?php if ($edit): ?>
         <?php 
-        echo "Order: " . Utils::escape($order->getId()); 
+        echo "Working Order: " . Utils::escape($order->getId()); 
         ?>
     <?php else: ?>
         Add new Order

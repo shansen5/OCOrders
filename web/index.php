@@ -74,6 +74,7 @@ final class Index {
             'Customer' => '../model/Customer.php',
             'CustomerSearchCriteria' => '../dao/CustomerSearchCriteria.php',
             'CustomerValidator' => '../validation/CustomerValidator.php',
+            'DBConnection' => '../dao/DBConnection.php',
             'OrderDao' => '../dao/OrderDao.php',
             'OrderMapper' => '../mapping/OrderMapper.php',
             'Order' => '../model/Order.php',

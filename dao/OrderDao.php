@@ -10,13 +10,8 @@ final class OrderDao {
     const ORDER_INSERT = 1;
     const ORDER_UPDATE = 2;
     
-    /** @var PDO */
-    private $db = null;
-
-
     public function __destruct() {
         // close db connection
-        $this->db = null;
     }
 
     /**
@@ -85,17 +80,7 @@ final class OrderDao {
      * @return PDO
      */
     private function getDb() {
-        if ($this->db !== null) {
-            return $this->db;
-        }
-        $config = Config::getConfig("db");
-        try {
-            $this->db = new PDO($config['dsn'], $config['username'], $config['password'], 
-                    array(PDO::MYSQL_ATTR_FOUND_ROWS => true));
-        } catch (Exception $ex) {
-            throw new Exception('DB connection error: ' . $ex->getMessage());
-        }
-        return $this->db;
+        return DBConnection::getDb();
     }
 
     private function getFindSql(OrderSearchCriteria $search = null) {
