@@ -28,6 +28,16 @@
                     </td>
             </tr>
             <tr>
+                <th>Account</th>
+                <td>
+                        <a href="<?php 
+                            echo Utils::createLink('account-detail', array('id' => $order->getAccountId())); 
+                    ?>"><?php 
+                        echo Utils::escape($order->getAccountName()); 
+                        ?></a>
+                    </td>
+            </tr>
+            <tr>
                 <th>Customer</th>
                 <td>
                         <a href="<?php 
@@ -42,7 +52,7 @@
                 <td><?php 
                     $it = $order->getItem();
                     if ( $it ) {
-                        echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                        echo Utils::escape($it->getCode() . ' - ' . $it->getName()
                                 . ' - ' . $it->getSize() . ' ' . $it->getUnit() ); 
                     } ?></td>
             </tr>
@@ -53,9 +63,10 @@
                     ?></td>
             </tr>
             <tr>
-                <th>Delivery Date</th>
+                <th>Delivery Date/Time</th>
                 <td><?php 
-                    echo Utils::escape(Utils::formatDateTime($order->getDeliveryDate())); 
+                    echo $order->getDeliveryDate()->format( 'Y-m-d' ) . ' - ' .
+                            $order->getDeliveryTime()->format( 'H:i' ); 
                     ?></td>
             </tr>
             <tr>
@@ -81,7 +92,7 @@
 </table>
 
 <p>
-    <?php $backLink = Utils::createLink('order-list', array()); ?>
+    <?php $backLink = Utils::createLink('working-order-list', array()); ?>
     <a href="<?php echo $backLink; ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
     <a href="<?php echo $backLink; ?>">To the list</a>
 </p>

@@ -15,8 +15,8 @@ final class ItemMapper {
      * Expected properties are:
      * <ul>
      *   <li>id</li>
-     *   <li>item_type</li>
-     *   <li>sub_type</li>
+     *   <li>code</li>
+     *   <li>name</li>
      *   <li>size</li>
      *   <li>unit</li>
      * </ul>
@@ -27,11 +27,11 @@ final class ItemMapper {
         if (array_key_exists('id', $properties)) {
             $item->setId($properties['id']);
         }
-        if (array_key_exists('item_type', $properties)) {
-            $item->setType($properties['item_type']);
+        if (array_key_exists('code', $properties)) {
+            $item->setCode($properties['code']);
         }
-        if (array_key_exists('sub_type', $properties)) {
-            $item->setSubType($properties['sub_type']);
+        if (array_key_exists('name', $properties)) {
+            $item->setName($properties['name']);
         }
         if (array_key_exists('size', $properties)) {
             $item->setSize($properties['size']);

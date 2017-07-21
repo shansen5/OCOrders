@@ -8,13 +8,7 @@ final class WorkingOrderDao {
     const ORDER_INSERT = 1;
     const ORDER_UPDATE = 2;
     
-    /** @var PDO */
-    private $db = null;
-
-
     public function __destruct() {
-        // close db connection
-        $this->db = null;
     }
 
     /**
@@ -37,7 +31,7 @@ final class WorkingOrderDao {
      */
     public function findById($id) {
         $row = $this->query('SELECT id, order_id, item_id,
-                        delivery_date, modified_date, pickup_location_id,
+                        delivery_date, delivery_time, modified_date, pickup_location_id,
                         user_id, quantity
                         FROM working_orders 
                         WHERE id = ' . (int) $id)->fetch();
@@ -73,6 +67,7 @@ final class WorkingOrderDao {
         if ( ! $order ) {
             return null;
         }
+        $this->deleteOrder( $order );
         if ( $order->getFrequency() == 'MONTHLY' ) {
             // Handle this case separately
             $this->saveMonthlyOrders( $order );
@@ -82,11 +77,7 @@ final class WorkingOrderDao {
                 $working_date = $order->getStartDate();
             }
             if ( $order->getFrequency() == 'ONCE' ) {
-                $new_wo = new WorkingOrder( $order );
-                $new_wo->setDeliveryDate( $working_date );
-                if ( ! $this->save( $new_wo )) {
-                    throw new Exception( 'Failed to save WorkingOrder' . $working_date );
-                }
+                $this->createWorkingOrder( $order, $working_date );
                 return;
             }
             // if ( $order->getFrequency() != 'WEEKLY' && $order->getFrequency() != 'BI-WEEKLY' ) {
@@ -98,25 +89,28 @@ final class WorkingOrderDao {
             $intervalMon = new DateInterval( 'P1M' );
             $interval1 = new DateInterval( 'P1D' );
             while ( $working_date < $order->getEndDate() ) {
-                if ( $working_date->format( "D" ) == $order_dw ) {
-                    $new_wo = new WorkingOrder( $order );
-                    $new_wo->setDeliveryDate( $working_date );
-                    if ( ! $this->save( $new_wo )) {
-                        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
-                    } 
+                $current_dw = $working_date->format( "D" );
+                if ( $order->getFrequency() == 'DAILY' ) {
+                    if ( ! $order->skipDay( $current_dw ) ) {
+                        $this->createWorkingOrder( $order, $working_date );
+                    }
+                    $working_date->add( $interval1 );
+                } else if ( $current_dw == $order_dw ) {
+                    $this->createWorkingOrder( $order, $working_date );
                     if ( $order->getFrequency() == 'WEEKLY' ) {
                         $working_date->add( $interval7 );
-                    }
-                    if ( $order->getFrequency() == 'BI-WEEKLY' ) {
-                        $working_date->add( $interval14 );
-                    }
-                    if ( $order->getFrequency() == 'MONTHLY' ) {
+                    } else if ( $order->getFrequency() == 'BI-WEEKLY' ) {
+                            $working_date->add( $interval14 );
+                    } else if ( $order->getFrequency() == 'N-WEEKLY' ) {
+                        foreach ( range( 1, $order->getNWeekly() ) as $i ) {
+                            $working_date->add( $interval7 );
+                        }
+                    } else if ( $order->getFrequency() == 'MONTHLY' ) {
                         if ( !$foundMonthly1st ) {
                             $foundMonthly1st = true;
                         }
                         $working_date->add( $intervalMon );
                     }
-
                 } else {
                     $working_date->add( $interval1 );
                 }
@@ -126,6 +120,14 @@ final class WorkingOrderDao {
         return $order;
     }
 
+private function createWorkingOrder( $order, $working_date ) {
+    
+                    $new_wo = new WorkingOrder( $order );
+                    $new_wo->setDeliveryDate( $working_date );
+                    if ( ! $this->save( $new_wo )) {
+                        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
+                    } 
+}   
 
     /**
      * Create WorkingOrder records from the Order. {@link Order}.
@@ -179,11 +181,7 @@ private function saveMonthlyOrders( Order $order ) {
                     }
                 }
             }
-            $new_wo = new WorkingOrder( $order );
-            $new_wo->setDeliveryDate( $working_date );
-            if ( ! $this->save( $new_wo )) {
-                throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
-            } 
+            $this->createWorkingOrder( $order, $working_date );
             $working_date->add( $intervalMon );
             if (( $working_date->format( "m" ) == 1 && $month_todo == 12 ) ||
                 ( $working_date->format( "m" ) > $month_todo )) {
@@ -208,9 +206,8 @@ private function saveMonthlyOrders( Order $order ) {
     }
 
     /**
-     * Delete {@link Working} by identifier.
-     * @param int $id {@link } identifier
-     * @return bool <i>true</i> on success, <i>false</i> otherwise
+     * Delete {@link id} by identifier.
+     * @param int $order {@link id} identifier
      */
     public function delete($id) {
         $sql = '
@@ -221,30 +218,38 @@ private function saveMonthlyOrders( Order $order ) {
         $this->executeStatement($statement, array(
             ':id' => $id
         ));
-        return $statement->rowCount() == 1;
+    }
+
+    /**
+     * Delete {@link Order} by identifier.
+     * @param int $order {@link Order} 
+     */
+    public function deleteOrder(Order $order) {
+        $sql = '
+            DELETE FROM working_orders 
+            WHERE
+                order_id = :order_id AND delivery_date >= :delivery_date';
+        $statement = $this->getDb()->prepare($sql);
+        $d = new DateTime();
+        $now = $d->format('Y-m-d');
+        $this->executeStatement($statement, array(
+            ':order_id' => $order->getId(),
+            ':delivery_date' => $now
+        ));
     }
 
     /**
      * @return PDO
      */
     private function getDb() {
-        if ($this->db !== null) {
-            return $this->db;
-        }
-        $config = Config::getConfig("db");
-        try {
-            $this->db = new PDO($config['dsn'], $config['username'], $config['password'], 
-                    array(PDO::MYSQL_ATTR_FOUND_ROWS => true));
-        } catch (Exception $ex) {
-            throw new Exception('DB connection error: ' . $ex->getMessage());
-        }
-        return $this->db;
+        return DBConnection::getDb();
     }
 
     private function getFindSql(WorkingOrderSearchCriteria $search = null) {
         $sql = 'SELECT w.id, w.order_id, w.item_id, w.user_id,
-                        w.delivery_date, w.modified_date, 
-                        w.pickup_location_id, w.quantity, o.customer_id
+                        w.delivery_date, w.delivery_time, w.modified_date, 
+                        w.pickup_location_id, w.quantity, 
+                        o.account_id, o.customer_id
                         FROM working_orders w, orders o 
                         WHERE w.order_id = o.id ';
         if ( $search && $search->hasFilter() ) {
@@ -262,6 +267,9 @@ private function saveMonthlyOrders( Order $order ) {
                     // All rows with delivery_date less than the end_date.
                     $sql .= ' AND w.delivery_date <= "' . $search->getEndDate() . '" ';
                 }
+            }
+            if ( $search->getAccountId() ) {
+                $sql .= ' AND o.account_id = ' . $search->getAccountId();
             }
             if ( $search->getCustomerId() ) {
                 $sql .= ' AND o.customer_id = ' . $search->getCustomerId();
@@ -285,9 +293,9 @@ private function saveMonthlyOrders( Order $order ) {
     private function insert( $working_order) {
         $working_order->setId( null );
         $sql = 'INSERT INTO working_orders (id, order_id, item_id, pickup_location_id, user_id, 
-                    delivery_date, modified_date, quantity)
+                    delivery_date, delivery_time, modified_date, quantity)
                 VALUES (:id, :order_id, :item_id, :pickup_location_id, :user_id,
-                        :delivery_date, :modified_date, :quantity)';
+                        :delivery_date, :delivery_time, :modified_date, :quantity)';
         $result = $this->execute($sql, $working_order, self::ORDER_INSERT);
        
         return $result;
@@ -304,6 +312,7 @@ private function saveMonthlyOrders( Order $order ) {
                 pickup_location_id = :pickup_location_id,
                 user_id = :user_id,
                 delivery_date = :delivery_date,
+                delivery_time = :delivery_time,
                 modified_date = :modified_date,
                 quantity = :quantity
             WHERE
@@ -335,6 +344,7 @@ private function saveMonthlyOrders( Order $order ) {
             ':item_id' => $order->getItemId(),
             ':pickup_location_id' => $order->getLocationId(),
             ':delivery_date' => self::formatDateTime($order->getDeliveryDate()),
+            ':delivery_time' => $order->getDeliveryTime()->format( 'H:i' ),
             ':modified_date' => self::formatDateTime(new DateTime()),
             ':quantity' => $order->getQuantity(),
             ':user_id' => Utils::getUserIdByName( $_SESSION['oc_user'] ),

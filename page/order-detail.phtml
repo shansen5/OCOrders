@@ -12,6 +12,16 @@
     <tr>
         <td>
             <tr>
+                <th>Account</th>
+                <td>
+                        <a href="<?php 
+                            echo Utils::createLink('account-detail', array('id' => $order->getCustomerId())); 
+                    ?>"><?php 
+                        echo Utils::escape($order->getAccountName()); 
+                        ?></a>
+                    </td>
+            </tr>
+            <tr>
                 <th>Customer</th>
                 <td>
                         <a href="<?php 
@@ -26,8 +36,8 @@
                 <td><?php 
                     $it = $order->getItem();
                     if ( $it ) {
-                        echo Utils::escape($it->getType() . ' - ' 
-                                . $it->getSubtype() . ' - ' . $it->getSize() 
+                        echo Utils::escape($it->getCode() . ' - ' 
+                                . $it->getName() . ' - ' . $it->getSize() 
                                 . ' ' . $it->getUnit()) ; 
                     }
                     ?></td>
@@ -52,13 +62,41 @@
                 <th>Frequency</th>
                 <td><?php echo Utils::escape($order->getFrequency()); ?></td>
             </tr>
+            <?php if ($order->getFrequency() == 'N-WEEKLY') : ?>
+            <tr>
+                <th>N Weeks</th>
+                <td><?php echo Utils::escape($order->getNWeekly()); ?></td>
+            </tr>
+            <?php endif ?>
+            <?php if ($order->getFrequency() == 'DAILY') : ?>
+            <tr>
+                <th>Skip Days</th>
+                <td><?php 
+                $multi = false;
+                foreach ( $order->allDays() as $d ) {
+                    if ( $order->skipDay( $d ) ) {
+                        if ( $multi ) {
+                            echo ', ';
+                        }
+                        echo $d; 
+                        $multi = true;
+                    }
+                }
+                ?></td>
+            </tr>
+            <?php else : ?>
             <tr>
                 <th>Day of Week</th>
                 <td><?php echo Utils::escape($order->getDayOfWeek()); ?></td>
             </tr>
+            <?php endif ?>
             <tr>
                 <th>Location</th>
                 <td><?php echo Utils::escape($order->getLocationName()); ?></td>
+            </tr>
+            <tr>
+                <th>Delivery Time</th>
+                <td><?php echo $order->getDeliveryTime()->format( 'H:i' ); ?></td>
             </tr>
             <tr>
                 <th>Order Date</th>
@@ -71,6 +109,7 @@
                 ?></td>
             </tr>
             <div class="actions">
+                <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
                 <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId())); ?>"><img src="img/action/edit.png" alt="" title="Edit it." class="icon" /></a>
                 <a href="<?php echo Utils::createLink('order-delete', array('id' => $order->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
             </div>

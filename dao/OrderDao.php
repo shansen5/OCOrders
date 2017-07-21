@@ -10,13 +10,8 @@ final class OrderDao {
     const ORDER_INSERT = 1;
     const ORDER_UPDATE = 2;
     
-    /** @var PDO */
-    private $db = null;
-
-
     public function __destruct() {
         // close db connection
-        $this->db = null;
     }
 
     /**
@@ -38,10 +33,10 @@ final class OrderDao {
      * @return Order or <i>null</i> if not found
      */
     public function findById($id) {
-        $row = $this->query('SELECT id, customer_id, item_id,
-                        start_date, end_date, 
-                        frequency, day_of_week, pickup_location_id, quantity,
-                        order_date, user_id
+        $row = $this->query('SELECT id, account_id, customer_id, item_id,
+                        start_date, end_date, n_weekly, daily_skip,
+                        frequency, day_of_week, pickup_location_id, delivery_time,
+                        quantity, order_date, user_id
                         FROM orders 
                         WHERE id = ' . (int) $id)->fetch();
         if (!$row) {
@@ -58,7 +53,7 @@ final class OrderDao {
      * @return Order saved {@link Order} instance
      */
     public function save(Order $order) {
-        if ($order->getId() === null) {
+        if ( $order->getId() === null || $order->getId() == 0 ) {
             return $this->insert($order);
         }
         return $this->update($order);
@@ -85,27 +80,42 @@ final class OrderDao {
      * @return PDO
      */
     private function getDb() {
-        if ($this->db !== null) {
-            return $this->db;
-        }
-        $config = Config::getConfig("db");
-        try {
-            $this->db = new PDO($config['dsn'], $config['username'], $config['password'], 
-                    array(PDO::MYSQL_ATTR_FOUND_ROWS => true));
-        } catch (Exception $ex) {
-            throw new Exception('DB connection error: ' . $ex->getMessage());
-        }
-        return $this->db;
+        return DBConnection::getDb();
     }
 
     private function getFindSql(OrderSearchCriteria $search = null) {
-        $sql = 'SELECT o.id, o.customer_id, o.item_id, c.last_name, c.first_name,
-                        o.start_date, o.end_date, 
-                        o.frequency, o.day_of_week, o.pickup_location_id, o.quantity,
-                        o.order_date, o.user_id
-                        FROM orders o, customers c
-                        WHERE o.customer_id = c.id 
-                        ORDER BY c.last_name, c.first_name';
+        $sql = 'SELECT o.id, o.account_id, o.customer_id, o.item_id, 
+                        o.start_date, o.end_date, o.n_weekly, o.daily_skip,
+                        o.frequency, o.day_of_week, o.pickup_location_id, o.delivery_time,
+                        o.quantity, o.order_date, o.user_id
+                        FROM orders o';
+        if ( $search ) {
+            $whereStarted = false;
+            if ( $search->hasFilter() ) {
+                if ( $search->getAccountId() ) {
+                    $sql .= ' WHERE o.account_id = ' . $search->getAccountId();
+                    $whereStarted = true;
+                }
+                if ( $search->getCustomerId() ) {
+                    if ( $whereStarted ) {
+                        $sql .= ' AND ';
+                    } else {
+                        $sql .= ' WHERE ';
+                        $whereStarted = true;
+                    }
+                    $sql .= ' o.customer_id = ' . $search->getCustomerId();
+                }
+            }
+            if ( !$search->getShowExpired() ) {
+                if ( $whereStarted ) {
+                    $sql .= ' AND ';
+                } else {
+                    $sql .= ' WHERE ';
+                }
+                $sql .= ' o.end_date > \'' . self::formatDateTime(new DateTime()) . '\'';
+            }
+        }
+        $sql .= ' ORDER BY o.account_id, o.customer_id';
         return $sql;
     }
 
@@ -115,12 +125,20 @@ final class OrderDao {
      */
     private function insert(Order $order) {
         $order->setId( null );
-        $sql = 'INSERT INTO orders (id, customer_id, item_id, start_date, end_date,
-                        frequency, day_of_week, pickup_location_id, quantity,
-                        order_date, user_id)
-                VALUES (:id, :customer_id, :item_id, :start_date, :end_date,
-                        :frequency, :day_of_week, :pickup_location_id, :quantity,
-                        :order_date, :user_id)';
+        if ( $order->getCustomerId() == 0 ) {
+            $row = $this->query('SELECT default_customer_id FROM accounts WHERE id = ' . 
+                    $order->getAccountId())->fetch();
+            if ( !$row ) {
+                return null;
+            }
+            $order->setCustomerId( $row['default_customer_id'] );
+        }
+        $sql = 'INSERT INTO orders (id, account_id, customer_id, item_id, start_date, end_date,
+                        frequency, n_weekly, daily_skip, day_of_week, 
+                        pickup_location_id, delivery_time, quantity, order_date, user_id)
+                VALUES (:id, :account_id, :customer_id, :item_id, :start_date, :end_date,
+                        :frequency, :n_weekly, :daily_skip, :day_of_week, 
+                        :pickup_location_id, :delivery_time, :quantity, :order_date, :user_id)';
         $result = $this->execute($sql, $order, self::ORDER_INSERT);
        
         return $result;
@@ -133,13 +151,17 @@ final class OrderDao {
     private function update(Order $order) {
         $sql = 
             'UPDATE orders SET
+                account_id = :account_id,
                 customer_id = :customer_id,
                 item_id = :item_id,
                 start_date = :start_date,
                 end_date = :end_date,
                 frequency = :frequency,
+                n_weekly = :n_weekly,
+                daily_skip = :daily_skip,
                 day_of_week = :day_of_week,
                 pickup_location_id = :pickup_location_id,
+                delivery_time = :delivery_time,
                 quantity = :quantity,
                 order_date = :order_date,
                 user_id = :user_id
@@ -172,15 +194,19 @@ final class OrderDao {
             case self::ORDER_INSERT:
                 $params = array(
                     ':id' => $order->getId(),
+                    ':account_id' => $order->getAccountId(),
                     ':customer_id' => $order->getCustomerId(),
                     ':start_date' => self::formatDateTime($order->getStartDate()),
                     ':end_date' => self::formatDateTime($order->getEndDate()),
                     ':frequency' => $order->getFrequency(),
+                    ':n_weekly' => $order->getNWeekly(),
+                    ':daily_skip' => $order->getDailySkip(),
                     ':day_of_week' => $order->getDayOfWeek(),
                     ':pickup_location_id' => $order->getLocationId(),
+                    ':delivery_time' => $order->getDeliveryTime()->format( 'H:i' ),
                     ':item_id' => $order->getItemId(),
                     ':quantity' => $order->getQuantity(),
-                    ':order_date' => $this->formatDateTime(new DateTime()),
+                    ':order_date' => self::formatDateTime(new DateTime()),
                     ':user_id' => Utils::getUserIdByName()
                     );
                 break;

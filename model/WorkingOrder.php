@@ -17,6 +17,8 @@ final class WorkingOrder {
     /** @var DateTime */
     private $delivery_date;
     /** @var DateTime */
+    private $delivery_time;
+    /** @var DateTime */
     private $modified_date;
     /** @var int */
     private $quantity;
@@ -25,6 +27,8 @@ final class WorkingOrder {
     
     /** @var Location */
     private $pickup_location;
+    /** @var Account */
+    private $account;
     /** @var Customer */
     private $customer;
     /** @var Item */
@@ -39,7 +43,8 @@ final class WorkingOrder {
             $this->setOrderId( $order->getId());
             $this->setItemId( $order->getItemId() );
             $this->setLocationId( $order->getLocationId());
-            $this->setQuantity( $order->getQuantity());            
+            $this->setQuantity( $order->getQuantity());
+            $this->setDeliveryTime( $order->getDeliveryTime() );
         }
     }
 
@@ -119,6 +124,17 @@ final class WorkingOrder {
     }
 
     /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getDeliveryTime() {
+        return $this->delivery_time;
+    }
+
+    public function setDeliveryTime($t) {
+        $this->delivery_time = $t;
+    }
+
+    /**
      * @return DateTime
      */
     public function getModifiedDate() {
@@ -127,6 +143,49 @@ final class WorkingOrder {
 
     public function setModifiedDate(DateTime $modified_date) {
         $this->modified_date = $modified_date;
+    }
+
+    /**
+     * @return Account
+     */
+    public function getAccount() {
+        /*
+         * If $customer is null, use the $account_id to ask for it from 
+         * AccountDao.
+         */
+        if ($this->account == null ) {
+            $dao = new OrderDao();
+            $this->account = $dao->findById( $this->order_id )->getAccount();
+        }
+        return $this->account;
+    }
+
+    public function setAccount($account) {
+        $this->account = $account;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getAccountName() {
+        /*
+         * If $account is null, call getAccount().
+         * AccountDao.
+         */
+        if ( $this->getAccount() != null ) {
+            return $this->account->getName();
+        }
+        return null;
+    }
+
+    /**
+     * @return Account's id
+     */
+    public function getAccountId() {
+        if ( $this->getAccount() != null ) {
+            return $this->account->getId();
+        }
+        return null;
     }
 
     /**
@@ -223,6 +282,21 @@ final class WorkingOrder {
         }
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function getLocationZone() {
+        /*
+         * If $customer is null, call getLocation().
+         * LocationDao.
+         */
+        if ( $this->getLocation() != null ) {
+            return $this->getLocation()->getZone();
+        }
+        return null;
+    }
+
     /**
      * @return int 
      */

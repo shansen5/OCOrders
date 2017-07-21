@@ -20,6 +20,17 @@ function error_field($title, array $errors) {
 /* @var $customer Customer */
 ?>
 
+<?php if ($edit): ?>
+    <div class="actions">
+        <a href="<?php echo Utils::createLink('add-customer', array('id' => $customer->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
+        <a href="<?php echo Utils::createLink('customer-delete', array('id' => $customer->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Delete it." class="icon" /></a>
+    </div>
+    <div id="delete-dialog" title="Terminate this Order?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Order will be deleted. Are you sure?</p>
+    </div>
+<?php endif; ?>
+<br/><br/>
+
 <h1>
     <?php if ($edit): ?>
         <?php 
@@ -97,3 +108,9 @@ function error_field($title, array $errors) {
         </div>
     </fieldset>
 </form>
+<p>
+    <?php $backLink = Utils::createLink('customer-list', array()); ?>
+    <a href="<?php echo $backLink; ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
+    <a href="<?php echo $backLink; ?>">To the list</a>
+</p>
+

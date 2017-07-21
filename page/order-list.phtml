@@ -8,15 +8,99 @@
 
 ?>
 
+<table class="detail">
+    <tr>
+        <th>Actions</th>
+        <td>
+            <div class="actions">
+                <a href="<?php 
+                echo Utils::createLink('add-order'); 
+                ?>"><img src="img/action/add.png" alt="" title="Add Order" class="icon" /></a>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="twocolwrapper">
+    <div id="column1">
+        <form action="#" method="post">
+            <fieldset>
+                <div  class="field">
+                    <label>Account:</label>
+                    <select name="account_id">
+                        <option value=''>None</option>
+                        <option value="0" 
+                                <?php if ( "0" == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                >All Accounts</option>
+                    <?php foreach (Utils::getAllAccountIdAndName() as $account): ?>
+                        <option value="<?php echo $account[id]; ?>"
+                                <?php if ($account[id] == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $account[name] . ", " . $account[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+                <div  class="field">
+                    <label>Customer:</label>
+                    <select name="customer_id">
+                        <option value=''>None</option>
+                        <option value="0" 
+                        <option value="0" 
+                                <?php if ( "0" == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                >All Customers</option>
+                    <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
+                        <option value="<?php echo $cust[id]; ?>"
+                                <?php if ($cust[id] == $_POST['customer_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
+                    <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Show expired orders</label>
+                    <?php 
+                        if ( isset( $_POST[ 'show_expired' ])) {
+                            echo "<input type='checkbox' name='show_expired' checked />";
+                        } else {
+                            echo "<input type='checkbox' name='show_expired'/>";
+                        }
+                    ?>
+                </div>
+                <div class="wrapper">
+                    <input type="submit" name="save" value="FILTER" class="submit" />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="sidebar">
+        <form action="#" method="post">
+            <label>Count:  </label><?php echo sizeof( $orders ); ?>
+            <div class="wrapper">
+                <input type="hidden" name="customer_id" value="<?php 
+                echo $_POST['customer_id']; 
+                ?>">
+                <input type="submit" name="download_orders" value="Download" class="submit-left" />
+            </div>
+    </div>
+    <div id="cleared"></div>
+</div>
+
 <?php if (empty($orders)): ?>
-    <p>No orders found.</p>
+        <p>Select customer and/or account to view orders.</p>
 <?php else: ?>
     <table class="detail">
         <tr>
             <th>ID</th> 
+            <th>Account</th>
             <th>Customer</th>
             <th>Item</th>
-            <th>Quantity</th>
+            <th>Qty</th>
             <th>Location</th>
             <th>Start</th>
             <th>End</th>
@@ -28,18 +112,22 @@
             <?php /* @var $order Item */ ?>
             <tr>
                 <td>
-                    <a href="<?php echo Utils::createLink('order-detail', array('id' => $order->getId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId())) ?>">
                         <?php echo $order->getId() ?></a>
                 </td>
                 <td>
-                    <a href="<?php echo Utils::createLink('customer-detail', array('id' => $order->getCustomerId())) ?>">
+                    <a href="<?php echo Utils::createLink('add-edit-account', array('id' => $order->getAccountId())) ?>">
+                    <?php echo Utils::escape($order->getAccountName()) ?></a>
+                </td>
+                <td>
+                    <a href="<?php echo Utils::createLink('add-customer', array('id' => $order->getCustomerId())) ?>">
                     <?php echo Utils::escape($order->getCustomerName()) ?></a>
                 </td>
                 <td>
                     <?php 
                     $it = $order->getItem();
                     if ( $it ) {
-                        echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                        echo Utils::escape($it->getCode() . ' - ' . $it->getName()
                                 . ' - ' . $it->getSize() . ' ' . $it->getUnit() ); 
                     }?>
                 </td>
@@ -56,10 +144,21 @@
                     <?php echo Utils::escape(Utils::formatDate($order->getEndDate())) ?>
                 </td>
                 <td>
-                    <?php echo Utils::escape($order->getFrequency()) ?>
+                    <?php 
+                    if ( $order->getFrequency() == 'N-WEEKLY' ) {
+                        echo 'N-WEEKLY (' . $order->getNWeekly() . ')'; 
+                    } else { 
+                        echo Utils::escape($order->getFrequency()); } 
+                    ?>
                 </td>
                 <td>
-                    <?php echo Utils::escape($order->getDayOfWeek()) ?>
+                    <?php 
+                    if ( $order->getFrequency() == 'DAILY') {
+                        echo '---';
+                    } else {
+                        echo Utils::escape($order->getDayOfWeek()); 
+                    }
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>

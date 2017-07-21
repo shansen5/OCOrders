@@ -4,14 +4,17 @@
  * Model class representing one Order item.
  */
 final class Order {
-
-
+   
     /** @var int */
     private $id;
+    /** @var int */
+    private $account_id;
     /** @var int */
     private $customer_id;
     /** @var int */
     private $pickup_location_id;
+    /** @var Time */
+    private $delivery_time;
     /** @var int */
     private $item_id;
     /** @var DateTime */
@@ -20,6 +23,10 @@ final class Order {
     private $end_date;
     /** @var int */
     private $frequency;
+    /** @var int */
+    private $n_weekly;
+    /** @var int */
+    private $daily_skip;
     /** @var int */
     private $day_of_week;
     /** @var int */
@@ -31,6 +38,8 @@ final class Order {
     
     /** @var Location */
     private $pickup_location;
+    /** @var Account */
+    private $account;
     /** @var Customer */
     private $customer;
     /** @var Item */
@@ -43,7 +52,7 @@ final class Order {
     }
 
     public static function allFrequencies() {
-        return array( 'DAILY', 'WEEKLY', 'BI-WEEKLY', 'MONTHLY', 'ONCE');
+        return array( 'DAILY', 'WEEKLY', 'BI-WEEKLY', 'N-WEEKLY', 'MONTHLY', 'ONCE');
     }
     /**
      * Create new {@link Order} with default properties set.
@@ -52,6 +61,7 @@ final class Order {
         $now = new DateTime();
         $this->setStartDate($now);
         $this->setEndDate($now);
+        $this->setDeliveryTime( DateTime::createFromFormat( 'g:i A', "1:00 PM"));
     }
 
     //~ Getters & setters
@@ -64,10 +74,18 @@ final class Order {
     }
 
     public function setId($id) {
-        if ($this->id !== null && $this->id != $id) {
-            throw new Exception('Cannot change order id to ' . $id . ', already set to ' . $this->id);
-        }
         $this->id = (int) $id;
+    }
+
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getAccountId() {
+        return $this->account_id;
+    }
+
+    public function setAccountId($id) {
+        $this->account_id = (int) $id;
     }
 
     /**
@@ -78,9 +96,6 @@ final class Order {
     }
 
     public function setCustomerId($id) {
-        if ($this->customer_id !== null && $this->customer_id != $id) {
-            throw new Exception('Cannot change customer id to ' . $id . ', already set to ' . $this->customer_id);
-        }
         $this->customer_id = (int) $id;
     }
 
@@ -104,6 +119,17 @@ final class Order {
 
     public function setLocationId($id) {
         $this->pickup_location_id = (int) $id;
+    }
+
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getDeliveryTime() {
+        return $this->delivery_time;
+    }
+
+    public function setDeliveryTime($t) {
+        $this->delivery_time = $t;
     }
 
     /**
@@ -151,6 +177,44 @@ final class Order {
     }
 
     /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getNWeekly() {
+        return $this->n_weekly;
+    }
+
+    public function setNWeekly($n) {
+        $this->n_weekly = (int) $n;
+    }
+
+    /**
+     * @return int <i>null</i> if not persistent
+     */
+    public function getDailySkip() {
+        return $this->daily_skip;
+    }
+
+    public function setDailySkip($n) {
+        $this->daily_skip = (int) $n;
+    }
+
+    /**
+     * $dow is a 3-letter day of week abbreviation
+     * @return true if the day should be skipped for DAILY orders
+     */
+    
+    public function skipDay( $dow ) {
+        $allDays = $this->allDays();
+        if ( !$this->daily_skip || !in_array( $dow, $allDays )) {
+            return false;
+        }
+        $pos = array_search( $dow, $allDays ) + 1;
+        // $pos will be 1...7 for Sun...Sat
+        $val = $this->daily_skip & 1 << $pos;
+        return $val != 0;
+    }
+    
+    /**
      * @return int
      */
     public function getDayOfWeek() {
@@ -159,6 +223,39 @@ final class Order {
 
     public function setDayOfWeek($day_of_week) {
         $this->day_of_week = $day_of_week;
+    }
+
+    /**
+     * @return Account
+     */
+    public function getAccount() {
+        /*
+         * If $customer is null, use the $account_id to ask for it from 
+         * AccountDao.
+         */
+        if ($this->account == null ) {
+            $dao = new AccountDao();
+            $this->account = $dao->findById( $this->account_id );
+        }
+        return $this->account;
+    }
+
+    public function setAccount($account) {
+        $this->account = $account;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getAccountName() {
+        /*
+         * If $account is null, call getAccount().
+         * AccountDao.
+         */
+        if ( $this->getAccount() != null ) {
+            return $this->account->getName();
+        }
+        return null;
     }
 
     /**
@@ -245,6 +342,21 @@ final class Order {
         }
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryZone() {
+        /*
+         * If $customer is null, call getLocation().
+         * LocationDao.
+         */
+        if ( $this->getLocation() != null ) {
+            return $this->getLocation()->getZone();
+        }
+        return null;
+    }
+
     /**
      * @return int 
      */

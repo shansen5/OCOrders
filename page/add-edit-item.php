@@ -20,8 +20,8 @@ if (array_key_exists('cancel', $_POST)) {
 } elseif (array_key_exists('save', $_POST)) {
     // for security reasons, do not map the whole $_POST['item']
     $data = array(
-        'item_type' => $_POST['item']['type'],
-        'sub_type' => $_POST['item']['sub_type'],
+        'code' => $_POST['item']['code'],
+        'name' => $_POST['item']['name'],
         'size' => $_POST['item']['size'],
         'unit' => $_POST['item']['unit'],
     );

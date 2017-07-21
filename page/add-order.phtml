@@ -20,11 +20,25 @@ function error_field($title, array $errors) {
 /* @var $order Order */
 ?>
 
+<?php if ($edit): ?>
+    <div class="actions">
+        <a href="<?php echo Utils::createLink('add-order', array('id' => $order->getId(), 'clone' => true)); ?>"><img src="img/action/clone.png" alt="" title="Clone it." class="icon" /></a>
+        <a href="<?php echo Utils::createLink('order-delete', array('id' => $order->getId())); ?>" id="delete-link"><img src="img/action/delete.png" alt="" title="Terminate it." class="icon" /></a>
+    </div>
+    <div id="delete-dialog" title="Terminate this Order?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This Order will be deleted. Are you sure?</p>
+    </div>
+<?php endif; ?>
+
+<br/><br/>
 <h1>
     <?php if ($edit): ?>
-        <?php 
-        echo "Order: " . Utils::escape($order->getId()); 
-        ?>
+        <?php if ($clone): ?>Modify cloned Order
+        <?php else: ?>
+            <?php 
+            echo "Edit Order: " . Utils::escape($order->getId()); 
+            ?>
+        <?php endif; ?>
     <?php else: ?>
         Add new Order
     <?php endif; ?>
@@ -39,11 +53,30 @@ function error_field($title, array $errors) {
 </ul>
 <?php endif; ?>
 
+<p>If the account is the same as the customer, use the 'Default' choice for customer.</p>
+<br/>
 <form action="#" method="post">
     <fieldset>
         <div  class="field">
+            <label>Account:</label>
+            <select name="order[account_id]">
+            <?php foreach (Utils::getAllAccountIdAndName() as $account): ?>
+                <option value="<?php echo $account[id]; ?>"
+                        <?php if ($account[id] == $order->getAccountId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        ><?php echo $account[name] . ", " . $account[id]; ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div  class="field">
             <label>Customer:</label>
             <select name="order[customer_id]">
+                <option value="0"
+                        <?php if (0 == $order->getCustomerId()): ?>
+                            selected="selected"
+                        <?php endif; ?>
+                        >--Default--</option>
             <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
                 <option value="<?php echo $cust[id]; ?>"
                         <?php if ($cust[id] == $order->getCustomerId()): ?>
@@ -63,7 +96,7 @@ function error_field($title, array $errors) {
                         <?php endif; ?>
                         ><?php 
                         if ( $it ) {
-                            echo Utils::escape($it->getType() . ' - ' . $it->getSubtype()
+                            echo Utils::escape($it->getCode() . ' - ' . $it->getName()
                                 . ' - ' . $it->getSize() . ' ' . $it->getUnit() );
                         } ?></option>
             <?php endforeach; ?>
@@ -71,7 +104,7 @@ function error_field($title, array $errors) {
         </div>
         <div class="field">
             <label>Quantity:</label>
-            <input type="number" min="1" name="order[quantity]" 
+            <input type="number" min="0" name="order[quantity]" 
                 <?php if ($edit) { echo 'value="' . $order->getQuantity(); } else { echo 'value="1'; } ?>"
                    class="text<?php echo error_field('quantity', $errors); ?>"/>
         </div>
@@ -87,6 +120,18 @@ function error_field($title, array $errors) {
               
             <?php endforeach; ?>
             </select>
+        </div>
+        <div class="field">
+            <label>Delivery Time:</label>
+            <input type="time" name="order[delivery_time]" 
+                <?php 
+                if ($edit) { 
+                    echo 'value="' . $order->getDeliveryTime()->format( 'H:i' ); 
+                } else { 
+                    echo 'value="12:00"'; 
+                    
+                } ?>"
+                class="text<?php echo error_field('delivery_time', $errors); ?>" />
         </div>
         <div class="field">
             <label>Start Date:</label>
@@ -124,9 +169,82 @@ function error_field($title, array $errors) {
             <?php endforeach; ?>
             </select>
         </div>
+        <div class="field">
+            <div class="wrapper">
+                <label>Daily skip:</label>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[1]" value="0" />
+                    <input type="checkbox" name="dayskip[1]" value="1"
+                        <?php if ($order->skipDay( 'Sun' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                            >Su</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[2]" value="0" />
+                    <input type="checkbox" name="dayskip[2]" value="1"
+                        <?php if ($order->skipDay( 'Mon' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >M</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[3]" value="0" />
+                    <input type="checkbox" name="dayskip[3]" value="1"
+                        <?php if ($order->skipDay( 'Tue' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Tu</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[4]" value="0" />
+                    <input type="checkbox" name="dayskip[4]" value="1"
+                        <?php if ($order->skipDay( 'Wed' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >W</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[5]" value="0" />
+                    <input type="checkbox" name="dayskip[5]" value="1"
+                        <?php if ($order->skipDay( 'Thu' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Th</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[6]" value="0" />
+                    <input type="checkbox" name="dayskip[6]" value="1"
+                        <?php if ($order->skipDay( 'Fri' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >F</input>&nbsp;
+                </div>
+                <div class="fleft">
+                    <input type="hidden" name="dayskip[7]" value="0" />
+                    <input type="checkbox" name="dayskip[7]" value="1"
+                        <?php if ($order->skipDay( 'Sat' ) ): ?>
+                            checked
+                        <?php endif; ?>
+                           >Sa</input>&nbsp;
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label>N-Weekly N:</label>
+            <input type="number" min="1" name="order[n_weekly]" 
+                <?php if ($edit) { echo 'value="' . $order->getNWeekly(); } else { echo 'value="1'; } ?>"
+                   class="text<?php echo error_field('n_weekly', $errors); ?>"/>
+        </div>
+
         <div class="wrapper">
             <input type="submit" name="cancel" value="CANCEL" class="submit" />
-            <input type="submit" name="save" value="<?php echo $edit ? 'EDIT' : 'ADD'; ?>" class="submit" />
+            <input type="submit" name="save" value="<?php echo $edit ? ( $clone ? 'INSERT' : 'UPDATE' ) : 'ADD'; ?>" class="submit" />
         </div>
     </fieldset>
 </form>
+<p>
+    <?php $backLink = Utils::createLink('order-list', array()); ?>
+    <a href="<?php echo $backLink; ?>"><img src="img/action/back.png" alt="" title="Back to the list." class="icon"/></a>&nbsp;
+    <a href="<?php echo $backLink; ?>">To the list</a>
+</p>

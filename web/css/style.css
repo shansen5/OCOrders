@@ -132,8 +132,15 @@ textarea {
 form input.submit {
     float: right;
     color: #4c7cbd;
-    margin-left: 5px;
+    margin-right: 5px;
     width: 70px;
+    font-weight: bold;
+}
+form input.submit-left {
+    float: left;
+    color: #4c7cbd;
+    margin-left: 5px;
+    width: 90px;
     font-weight: bold;
 }
 .errors {
@@ -205,16 +212,16 @@ form input.submit {
     width: 100%;
 }
 #twocolwrapper {
-    margin-right: 200px;
+    margin-right: 150px;
 }
 #column1 {
     float: left;
-    width: 100%;
+    width: 75%;
     background-color: #FFA;
 }
 #sidebar {
   float: right;
-  width: 200px;
+  width: 300px;
   margin-right: -200px;
   background-color: #CCF;
 }
@@ -261,10 +268,10 @@ table.detail {
     margin-bottom: 20px;
 }
 table.detail th {
-    text-align: left;
+    text-align: center;
 }
 table.detail td {
-    padding: 2px 14px;
+    padding: 2px 6px;
 }
 
 .icon {
@@ -307,3 +314,7 @@ ul#flashes li {
 .ui-widget button {
     width: 70px;
 }
+
+.table { display: table; } 
+.table>* { display: table-row; }
+.table>*>* { display: table-cell; }

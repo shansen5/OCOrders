@@ -26,6 +26,7 @@ if (array_key_exists('cancel', $_POST)) {
         'state' => $_POST['location']['state'],
         'country' => $_POST['location']['country'],
         'postal_code' => $_POST['location']['postal_code'],
+        'zone' => $_POST['location']['zone'],
     );
         ;
     // map

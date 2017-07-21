@@ -38,7 +38,7 @@ final class LocationDao {
      * @return Location or <i>null</i> if not found
      */
     public function findById($id) {
-        $row = $this->query('SELECT l.id, l.address_id, l.name, a.street1, a.street2, a.city, 
+        $row = $this->query('SELECT l.id, l.address_id, l.name, l.zone, a.street1, a.street2, a.city, 
                                         a.state, a.postal_code, a.country
                             FROM locations l, addresses a
                             WHERE l.address_id = a.id AND l.id = '
@@ -116,7 +116,7 @@ final class LocationDao {
     }
 
     private function getFindSql(LocationSearchCriteria $search = null) {
-        $sql = 'SELECT l.id, l.address_id, l.name, a.street1, a.street2, a.city, 
+        $sql = 'SELECT l.id, l.address_id, l.name, l.zone, a.street1, a.street2, a.city, 
                                         a.state, a.postal_code, a.country
                             FROM locations l, addresses a
                             WHERE l.address_id = a.id ';
@@ -139,8 +139,8 @@ final class LocationDao {
         $statement = $this->getDb()->prepare($sql);
         $this->executeStatement($statement, $this->getParams($location, self::ADDRESS_INSERT));
 
-        $sql = 'INSERT INTO locations (id, name, address_id)
-                VALUES (:id, :name, ' . $this->getDb()->lastInsertId() . ')';
+        $sql = 'INSERT INTO locations (id, name, zone, address_id)
+                VALUES (:id, :name, :zone, ' . $this->getDb()->lastInsertId() . ')';
         $result = $this->execute($sql, $location, self::LOCATION_INSERT);
        
         return $result;
@@ -165,7 +165,8 @@ final class LocationDao {
         $this->executeStatement($statement, $this->getParams($location, self::ADDRESS_INSERT));
         $sql2 = '
             UPDATE locations SET
-                name = :name
+                name = :name,
+                zone = :zone
             WHERE
                 id = :id';
         return $this->execute($sql2, $location, self::LOCATION_INSERT);
@@ -205,6 +206,7 @@ final class LocationDao {
                 $params = array(
                     ':id' => $location->getId(),
                     ':name' => $location->getName(),
+                    ':zone' => $location->getZone()
                     );
                 break;
             default:

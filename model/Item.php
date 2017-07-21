@@ -17,9 +17,9 @@ final class Item {
     /** @var int */
     private $id;
     /** @var string */
-    private $sub_type;
+    private $name;
     /** @var string */
-    private $type;
+    private $code;
     /** @var number */
     private $size;
     /** @var enum */
@@ -60,23 +60,23 @@ final class Item {
     /**
      * @return string <i>null</i> if not persistent
      */
-    public function getType() {
-        return $this->type;
+    public function getCode() {
+        return $this->code;
     }
 
-    public function setType($type) {
-        $this->type = $type;
+    public function setCode($code) {
+        $this->code = $code;
     }
 
     /**
      * @return string <i>null</i> if not persistent
      */
-    public function getSubType() {
-        return $this->sub_type;
+    public function getName() {
+        return $this->name;
     }
 
-    public function setSubType($type) {
-        $this->sub_type = $type;
+    public function setName($name) {
+        $this->name = $name;
     }
 
     /**

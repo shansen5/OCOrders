@@ -20,6 +20,7 @@ final class OrderMapper {
      *   <li>start_date</li>
      *   <li>end_date</li>
      *   <li>frequency</li>
+     *   <li>n_weekly</li>
      *   <li>day_of_week</li>
      *   <li>quantity</li>
      *   <li>order_date</li>
@@ -32,6 +33,9 @@ final class OrderMapper {
         if (array_key_exists('id', $properties)) {
             $order->setId($properties['id']);
         }
+        if (array_key_exists('account_id', $properties)) {
+            $order->setAccountId($properties['account_id']);
+        }
         if (array_key_exists('customer_id', $properties)) {
             $order->setCustomerId($properties['customer_id']);
         }
@@ -40,6 +44,15 @@ final class OrderMapper {
         }
         if (array_key_exists('pickup_location_id', $properties)) {
             $order->setLocationId($properties['pickup_location_id']);
+        }
+        if (array_key_exists('delivery_time', $properties)) {
+            $deliveryTime = DateTime::createFromFormat('H:i:s', $properties['delivery_time']);
+            if ( !$deliveryTime ) {
+               $deliveryTime = DateTime::createFromFormat('H:i', $properties['delivery_time']); 
+            }
+            if ($deliveryTime) {
+                $order->setDeliveryTime($deliveryTime);
+            }
         }
         if (array_key_exists('start_date', $properties)) {
             $startDate = self::createDateTime($properties['start_date']);
@@ -55,6 +68,12 @@ final class OrderMapper {
         }
         if (array_key_exists('frequency', $properties)) {
             $order->setFrequency($properties['frequency']);
+        }
+        if (array_key_exists('n_weekly', $properties)) {
+            $order->setNWeekly($properties['n_weekly']);
+        }
+        if (array_key_exists('daily_skip', $properties)) {
+            $order->setDailySkip($properties['daily_skip']);
         }
         if (array_key_exists('day_of_week', $properties)) {
             $order->setDayOfWeek($properties['day_of_week']);

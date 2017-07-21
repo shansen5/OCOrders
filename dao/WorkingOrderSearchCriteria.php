@@ -55,6 +55,13 @@ final class WorkingOrderSearchCriteria {
         return $this->item_id;
     }
 
+    public function setAccountId( $id ) {
+        $this->account_id = $id;
+    }
+ 
+    public function getAccountId() {
+        return $this->account_id;
+    }
     public function setCustomerId( $id ) {
         $this->customer_id = $id;
     }
@@ -62,6 +69,4 @@ final class WorkingOrderSearchCriteria {
     public function getCustomerId() {
         return $this->customer_id;
     }
-
-
 }
