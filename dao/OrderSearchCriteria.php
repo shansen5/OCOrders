@@ -10,6 +10,7 @@ final class OrderSearchCriteria {
 
     private $customer_id = null;
     private $account_id = null;
+    private $show_expired = false;
 
     public function hasFilter() {
         if ( $this->customer_id || $this->account_id ) {
@@ -32,5 +33,12 @@ final class OrderSearchCriteria {
  
     public function getCustomerId() {
         return $this->customer_id;
+    }
+    public function setShowExpired( $sense ) {
+        $this->show_expired = $sense;
+    }
+ 
+    public function getShowExpired() {
+        return $this->show_expired;
     }
 }

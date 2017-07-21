@@ -89,19 +89,30 @@ final class OrderDao {
                         o.frequency, o.day_of_week, o.pickup_location_id, o.delivery_time,
                         o.quantity, o.order_date, o.user_id
                         FROM orders o';
-        if ( $search && $search->hasFilter() ) {
+        if ( $search ) {
             $whereStarted = false;
-            if ( $search->getAccountId() ) {
-                $sql .= ' WHERE o.account_id = ' . $search->getAccountId();
-                $whereStarted = true;
+            if ( $search->hasFilter() ) {
+                if ( $search->getAccountId() ) {
+                    $sql .= ' WHERE o.account_id = ' . $search->getAccountId();
+                    $whereStarted = true;
+                }
+                if ( $search->getCustomerId() ) {
+                    if ( $whereStarted ) {
+                        $sql .= ' AND ';
+                    } else {
+                        $sql .= ' WHERE ';
+                        $whereStarted = true;
+                    }
+                    $sql .= ' o.customer_id = ' . $search->getCustomerId();
+                }
             }
-            if ( $search->getCustomerId() ) {
+            if ( !$search->getShowExpired() ) {
                 if ( $whereStarted ) {
                     $sql .= ' AND ';
                 } else {
                     $sql .= ' WHERE ';
                 }
-                $sql .= ' o.customer_id = ' . $search->getCustomerId();
+                $sql .= ' o.end_date > \'' . self::formatDateTime(new DateTime()) . '\'';
             }
         }
         $sql .= ' ORDER BY o.account_id, o.customer_id';

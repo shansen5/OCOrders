@@ -28,7 +28,12 @@
                 <div  class="field">
                     <label>Account:</label>
                     <select name="account_id">
-                        <option value="0" >All Accounts</option>
+                        <option value=''>None</option>
+                        <option value="0" 
+                                <?php if ( "0" == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                >All Accounts</option>
                     <?php foreach (Utils::getAllAccountIdAndName() as $account): ?>
                         <option value="<?php echo $account[id]; ?>"
                                 <?php if ($account[id] == $_POST['account_id']): ?>
@@ -41,7 +46,13 @@
                 <div  class="field">
                     <label>Customer:</label>
                     <select name="customer_id">
-                        <option value="0" >All Customers</option>
+                        <option value=''>None</option>
+                        <option value="0" 
+                        <option value="0" 
+                                <?php if ( "0" == $_POST['account_id']): ?>
+                                    selected="selected"
+                                <?php endif; ?>
+                                >All Customers</option>
                     <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
                         <option value="<?php echo $cust[id]; ?>"
                                 <?php if ($cust[id] == $_POST['customer_id']): ?>
@@ -50,6 +61,16 @@
                                 ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
                     <?php endforeach; ?>
                     </select>
+                </div>
+                <div class="field">
+                    <label>Show expired orders</label>
+                    <?php 
+                        if ( isset( $_POST[ 'show_expired' ])) {
+                            echo "<input type='checkbox' name='show_expired' checked />";
+                        } else {
+                            echo "<input type='checkbox' name='show_expired'/>";
+                        }
+                    ?>
                 </div>
                 <div class="wrapper">
                     <input type="submit" name="save" value="FILTER" class="submit" />
@@ -71,7 +92,7 @@
 </div>
 
 <?php if (empty($orders)): ?>
-    <p>No orders found.</p>
+        <p>Select customer and/or account to view orders.</p>
 <?php else: ?>
     <table class="detail">
         <tr>

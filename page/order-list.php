@@ -1,12 +1,25 @@
 <?php
 
 $dao = new OrderDao();
-$search = new OrderSearchCriteria();
-$search->setCustomerId( $_POST['customer_id'] );
-$search->setAccountId( $_POST['account_id'] );
+$customer_id = $_POST[ 'customer_id' ];
+$account_id = $_POST[ 'account_id' ];
+$show_expired = isset( $_POST[ 'show_expired' ] ) ? true : false;
 
 $title = 'Orders';
-$orders = $dao->find( $search );
+$orders = array();
+if ( $customer_id === '' ) {
+    unset( $customer_id );
+}
+if ( $account_id === '' ) {
+    unset( $account_id );
+}
+if ( !is_null( $customer_id ) || !is_null( $account_id )) {
+    $search = new OrderSearchCriteria();
+    $search->setCustomerId( $customer_id );
+    $search->setAccountId( $account_id ); 
+    $search->setShowExpired( $show_expired );
+    $orders = $dao->find( $search );
+}
 // data for template
 
 if (array_key_exists('download_orders', $_POST)) {
