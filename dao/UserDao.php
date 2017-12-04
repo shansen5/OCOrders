@@ -174,6 +174,7 @@ final class UserDao {
         switch( $query_type ) {
             case self::USER_INSERT:
                 $params = array(
+                    ':id' => $user->getId(),
                     ':username' => $user->getUsername(),
                     ':password' => $user->getPassword(),
                     ':role' => $user->getRole()
