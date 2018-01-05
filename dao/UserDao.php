@@ -173,10 +173,12 @@ final class UserDao {
         $params = array();
         switch( $query_type ) {
             case self::USER_INSERT:
+                $pwd_md5 = md5( $user->getPassword() );
+                $pwd_md5 = $pwd_md5 . $pwd_md5;
                 $params = array(
                     ':id' => $user->getId(),
                     ':username' => $user->getUsername(),
-                    ':password' => $user->getPassword(),
+                    ':password' => $pwd_md5,
                     ':role' => $user->getRole()
                     );
                 break;

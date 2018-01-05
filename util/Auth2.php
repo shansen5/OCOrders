@@ -30,11 +30,13 @@
 		if (!$password) {
 			return FALSE;
 		}
+                $len = strlen( $password );
+                $password = substr( $password, 0, $len/2 );
 		
-		if ($password != $pwd) {
+                $pwd_md5 = md5( $pwd );
+		if ($password != $pwd_md5) {
 			return FALSE;
 		}
-	
 		
                 $_SESSION['oc_user'] = $uname;
                     
