@@ -1,6 +1,6 @@
 <?php
 
-$item = Utils::getUserByGetId();
+$user = Utils::getUserByGetId();
 
 $dao = new UserDao();
 $dao->delete($user->getId());
