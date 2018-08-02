@@ -36,18 +36,20 @@ final class WorkingOrder {
 
     /**
      * 
-     * Create new {@link WorkingOrder} from the Order
+     * Create new {@link Order} from the Order
      */
-    public function __construct( $order ) {
-        if ( $order ) {
-            $this->setOrderId( $order->getId());
-            $this->setItemId( $order->getItemId() );
-            $this->setLocationId( $order->getLocationId());
-            $this->setQuantity( $order->getQuantity());
-            $this->setDeliveryTime( $order->getDeliveryTime() );
-        }
-    }
 
+    public static function makeWorkingOrderFromOrder( $order ) {
+        $wo = new WorkingOrder();
+        if ( $order ) {
+            $wo->setOrderId( $order->getId());
+            $wo->setItemId( $order->getItemId() );
+            $wo->setLocationId( $order->getLocationId());
+            $wo->setQuantity( $order->getQuantity());
+            $wo->setDeliveryTime( $order->getDeliveryTime() );
+        }        
+        return $wo;
+    }
     //~ Getters & setters
 
     /**
@@ -216,7 +218,7 @@ final class WorkingOrder {
          * CustomerDao.
          */
         if ( $this->getCustomer() != null ) {
-            return $this->customer->getLastName() . ', ' . $this->customer->getFirstName();;
+            return $this->customer->getLastName() . ', ' . $this->customer->getFirstName();
         }
         return null;
     }

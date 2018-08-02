@@ -17,11 +17,15 @@ final class WorkingOrderDao {
      */
     public function find(WorkingOrderSearchCriteria $search = null) {
         $result = array();
-        foreach ($this->query($this->getFindSql($search)) as $row) {
-            $order = new WorkingOrder();
-            WorkingOrderMapper::map($order, $row);
-            $result[$order->getId()] = $order;
-        }
+        $sql = $this->getFindSql( $search );
+        $queryResult = $this->query($sql);
+        if ( $queryResult ) {
+            foreach ($queryResult as $row) {
+                $order = new WorkingOrder();
+                WorkingOrderMapper::map($order, $row);
+                $result[$order->getId()] = $order;
+            }
+        }       
         return $result;
     }
 
@@ -122,18 +126,18 @@ final class WorkingOrderDao {
 
 private function createWorkingOrder( $order, $working_date ) {
     
-                    $new_wo = new WorkingOrder( $order );
-                    $new_wo->setDeliveryDate( $working_date );
-                    if ( ! $this->save( $new_wo )) {
-                        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
-                    } 
+    $new_wo = WorkingOrder::makeWorkingOrderFromOrder( $order );
+    $new_wo->setDeliveryDate( $working_date );
+    if ( ! $this->save( $new_wo )) {
+        throw new Exception( 'Failed to save WorkingOrder ' . $working_date );
+    } 
 }   
 
-    /**
-     * Create WorkingOrder records from the Order. {@link Order}.
-     * Special handling of the MONTHLY frequency case.
-     * @param Order $order {@link Order} to be used
-     */
+/**
+ * Create WorkingOrder records from the Order. {@link Order}.
+ * Special handling of the MONTHLY frequency case.
+ * @param Order $order {@link Order} to be used
+ */
 private function saveMonthlyOrders( Order $order ) {
     /*
      * Find the next day_of_week after the start_date.  Get the number of
@@ -384,7 +388,7 @@ private function saveMonthlyOrders( Order $order ) {
     }
 
     private static function formatDateTime(DateTime $date) {
-        return $date->format(DateTime::ISO8601);
+        return $date->format('Y-m-d H:i:s');
     }
 
 }

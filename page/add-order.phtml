@@ -61,11 +61,11 @@ function error_field($title, array $errors) {
             <label>Account:</label>
             <select name="order[account_id]">
             <?php foreach (Utils::getAllAccountIdAndName() as $account): ?>
-                <option value="<?php echo $account[id]; ?>"
-                        <?php if ($account[id] == $order->getAccountId()): ?>
+                <option value="<?php echo $account['id']; ?>"
+                        <?php if ($account['id'] == $order->getAccountId()): ?>
                             selected="selected"
                         <?php endif; ?>
-                        ><?php echo $account[name] . ", " . $account[id]; ?></option>
+                        ><?php echo $account['name'] . ", " . $account['id']; ?></option>
             <?php endforeach; ?>
             </select>
         </div>
@@ -78,11 +78,11 @@ function error_field($title, array $errors) {
                         <?php endif; ?>
                         >--Default--</option>
             <?php foreach (Utils::getAllCustomerIdAndName() as $cust): ?>
-                <option value="<?php echo $cust[id]; ?>"
-                        <?php if ($cust[id] == $order->getCustomerId()): ?>
+                <option value="<?php echo $cust['id']; ?>"
+                        <?php if ($cust['id'] == $order->getCustomerId()): ?>
                             selected="selected"
                         <?php endif; ?>
-                        ><?php echo $cust[last_name] . ", " . $cust[first_name] . ", " . $cust[id]; ?></option>
+                        ><?php echo $cust['last_name'] . ", " . $cust['first_name'] . ", " . $cust['id']; ?></option>
             <?php endforeach; ?>
             </select>
         </div>
@@ -112,11 +112,11 @@ function error_field($title, array $errors) {
             <label>Location:</label>
             <select name="order[pickup_location_id]">
             <?php foreach (Utils::getAllLocationIdAndName() as $loc): ?>
-                <option value="<?php echo $loc[id]; ?>"
-                        <?php if ($loc[id] == $order->getLocationId()): ?>
+                <option value="<?php echo $loc['id']; ?>"
+                        <?php if ($loc['id'] == $order->getLocationId()): ?>
                             selected="selected"
                         <?php endif; ?>
-                        ><?php echo $loc[name] . ", " . $loc[id]; ?></option>
+                        ><?php echo $loc['name'] . ", " . $loc['id']; ?></option>
               
             <?php endforeach; ?>
             </select>

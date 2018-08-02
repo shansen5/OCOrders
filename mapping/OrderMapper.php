@@ -55,13 +55,13 @@ final class OrderMapper {
             }
         }
         if (array_key_exists('start_date', $properties)) {
-            $startDate = self::createDateTime($properties['start_date']);
+            $startDate = DateTime::createFromFormat('Y-m-d', $properties['start_date']);
             if ($startDate) {
                 $order->setStartDate($startDate);
             }
         }
         if (array_key_exists('end_date', $properties)) {
-            $endDate = self::createDateTime($properties['end_date']);
+            $endDate = DateTime::createFromFormat('Y-m-d', $properties['end_date']);
             if ($endDate) {
                 $order->setEndDate($endDate);
             }
@@ -82,7 +82,7 @@ final class OrderMapper {
             $order->setQuantity($properties['quantity']);
         }
         if (array_key_exists('order_date', $properties)) {
-            $orderDate = DateTime::createFromFormat('Y-m-d H:i:s', $properties['order_date']);
+            $orderDate = DateTime::createFromFormat('Y-m-d', $properties['order_date']);
             if ($orderDate) {
                 $order->setOrderDate($orderDate);
             }

@@ -196,6 +196,7 @@ final class OrderDao {
                     ':id' => $order->getId(),
                     ':account_id' => $order->getAccountId(),
                     ':customer_id' => $order->getCustomerId(),
+                    ':item_id' => $order->getItemId(),
                     ':start_date' => self::formatDateTime($order->getStartDate()),
                     ':end_date' => self::formatDateTime($order->getEndDate()),
                     ':frequency' => $order->getFrequency(),
@@ -204,7 +205,6 @@ final class OrderDao {
                     ':day_of_week' => $order->getDayOfWeek(),
                     ':pickup_location_id' => $order->getLocationId(),
                     ':delivery_time' => $order->getDeliveryTime()->format( 'H:i' ),
-                    ':item_id' => $order->getItemId(),
                     ':quantity' => $order->getQuantity(),
                     ':order_date' => self::formatDateTime(new DateTime()),
                     ':user_id' => Utils::getUserIdByName()
@@ -240,7 +240,7 @@ final class OrderDao {
     }
 
     private static function formatDateTime(DateTime $date) {
-        return $date->format(DateTime::ISO8601);
+        return $date->format('Y-m-d H:i:s');
     }
 
 }
